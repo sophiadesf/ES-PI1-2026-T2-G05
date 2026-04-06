@@ -20,6 +20,5 @@
 # Tecnologias Utilizadas
 - MySQL
 - Python
-- HTML/CSS
-
-## 📁 Estrutura do Projeto
+  
+  # 📁 Estrutura do Projeto
