@@ -265,12 +265,105 @@ while opcao != 3:
                     print("\nOpcao invalida!\n")
             
             # ---------------------------------------------------------
-            # REMOVER ELEITOR (RF001.06) - A implementar
+            # REMOVER ELEITOR (RF001.06) 
             # ---------------------------------------------------------
-            elif opcaoGerenciamento == 3:
-                print("Entrou em Gerenciamento -> Remover Eleitor\n")
-                util.salvar_log("GERENCIAMENTO - Remover Eleitor")
             
+            elif opcaoGerenciamento == 3:
+                print("=== REMOVER ELEITOR ===\n")
+                util.salvar_log("GERENCIAMENTO - Remover Eleitor")
+                
+                # Solicitar CPF para busca
+                cpf_busca = input("Digite o CPF do eleitor a remover: ").strip()
+                cpf_busca = ''.join(filter(str.isdigit, cpf_busca))
+                
+                # Validar formato do CPF
+                if len(cpf_busca) != 11:
+                    print("\nErro: CPF deve ter 11 digitos!\n")
+                    continue
+                
+                # Variaveis para armazenar resultado da busca
+                eleitor_encontrado = None
+                tipo_eleitor = None
+                
+                try:
+                    # Buscar na tabela de usuarios
+                    consultas.cursor.execute(
+                        "SELECT cpf, nome_completo FROM usuarios WHERE cpf = %s", 
+                        (cpf_busca,)
+                    )
+                    resultado = consultas.cursor.fetchone()
+                    
+                    if resultado:
+                        eleitor_encontrado = resultado
+                        tipo_eleitor = "usuario"
+                    else:
+                        # Se nao encontrou em usuarios, buscar em mesarios
+                        consultas.cursor.execute(
+                            "SELECT cpf, nome_completo FROM mesarios WHERE cpf = %s", 
+                            (cpf_busca,)
+                        )
+                        resultado = consultas.cursor.fetchone()
+                        if resultado:
+                            eleitor_encontrado = resultado
+                            tipo_eleitor = "mesario"
+                            
+                except Exception as e:
+                    print("\nErro ao buscar: " + str(e) + "\n")
+                    util.salvar_log("ERRO - Falha ao buscar eleitor para remocao: " + str(e))
+                    continue
+                
+                # Verificar se eleitor foi encontrado
+                if not eleitor_encontrado:
+                    print("\nEleitor nao encontrado!\n")
+                    util.salvar_log("ERRO - Eleitor nao encontrado para remocao: " + cpf_busca)
+                    continue
+                
+                # Exibir dados do eleitor a remover
+                print("\n" + "="*40)
+                print("DADOS DO ELEITOR A REMOVER:")
+                print("="*40)
+                print("CPF: " + eleitor_encontrado[0])
+                print("Nome: " + eleitor_encontrado[1])
+                print("Tipo: " + ("Mesario" if tipo_eleitor == "mesario" else "Eleitor"))
+                print("="*40)
+                
+                # Solicitar confirmacao
+                confirmacao = input("\nTem certeza que deseja remover este eleitor? (S/N): ").strip().upper()
+                
+                if confirmacao != 'S':
+                    print("\nRemocao cancelada.\n")
+                    util.salvar_log("GERENCIAMENTO - Remocao de eleitor cancelada: " + cpf_busca)
+                    continue
+                
+                # Executar DELETE no banco de dados
+                try:
+                    if tipo_eleitor == "usuario":
+                        consultas.cursor.execute(
+                            "DELETE FROM usuarios WHERE cpf = %s",
+                            (cpf_busca,)
+                        )
+                    else:
+                        consultas.cursor.execute(
+                            "DELETE FROM mesarios WHERE cpf = %s",
+                            (cpf_busca,)
+                        )
+                    
+                    # Confirmar transacao
+                    consultas.conexao.commit()
+                    
+                    # Exibir confirmacao
+                    print("\n" + "="*40)
+                    print("ELEITOR REMOVIDO COM SUCESSO!")
+                    print("="*40)
+                    print("CPF: " + eleitor_encontrado[0])
+                    print("Nome: " + eleitor_encontrado[1])
+                    print("="*40 + "\n")
+                    
+                    util.salvar_log("SUCESSO - Eleitor removido: " + cpf_busca + " (" + eleitor_encontrado[1] + ")")
+                    
+                except Exception as e:
+                    print("\nErro ao remover: " + str(e) + "\n")
+                    util.salvar_log("ERRO - Falha ao remover eleitor: " + str(e))
             # ---------------------------------------------------------
             # BUSCAR ELEITOR (RF001.07) - A implementar
             # ---------------------------------------------------------
