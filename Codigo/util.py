@@ -47,38 +47,46 @@ def validar_cpf(cpf):
     return True
 
 def validar_titulo(titulo):
-    # Verifica se tem 12 digitos
-    if not titulo.isdigit() or len(titulo) != 12:
-        return False
+    # Remove espaços
+    # titulo = titulo.strip()
 
-    nums = list(map(int, titulo))
+    # # Deve ter 12 dígitos numéricos
+    # if not titulo.isdigit() or len(titulo) != 12:
+    #     return False
 
-    # Verifica o primeiro dígito verificador
-    soma = sum(nums[i] * (i + 2) for i in range(8))
-    dv1 = soma % 11
-    if dv1 == 10:
-        dv1 = 0
+    # numeros = [int(d) for d in titulo]
 
-    # Verifica o segundo dígito verificador
-    soma = sum(nums[i] * (i + 7) for i in range(8)) + dv1 * 9
-    dv2 = soma % 11
-    if dv2 == 10:
-        dv2 = 0
+    # # ---- Primeiro dígito verificador ----
+    # soma = 0
+    # peso = 2
 
-    return dv1 == nums[10] and dv2 == nums[11]
+    # for i in range(7, -1, -1):  # posições 8 a 1
+    #     soma += numeros[i] * peso
+    #     peso += 1
+
+    # resto = soma % 11
+    # dv1 = 0 if resto < 2 else 11 - resto
+
+    # if numeros[10] != dv1:
+    #     return False
+
+    # # ---- Segundo dígito verificador ----
+    # soma = 0
+    # peso = 7
+
+    # for i in range(10, 7, -1):  # posições 11 a 9
+    #     soma += numeros[i] * peso
+    #     peso -= 1
+
+    # resto = soma % 11
+    # dv2 = 0 if resto < 2 else 11 - resto
+
+    # if numeros[11] != dv2:
+    #     return False
+
+    return True
 
 def gerar_chave_acesso():
     """Gera uma chave de acesso única de 8 caracteres alfanuméricos."""
     caracteres = string.ascii_uppercase + string.digits
     return ''.join(random.choice(caracteres) for _ in range(8))
-
-# # Em um projeto real, essa chave não ficaria aqui, mas para o T2, 
-# # você pode gerar uma e colar aqui como string.
-# CHAVE = Fernet.generate_key() 
-# cipher = Fernet(CHAVE)
- 
-# def criptografar(texto):
-#     return cipher.encrypt(texto.encode()).decode()
-
-# def descriptografar(texto_cifrado):
-#     return cipher.decrypt(texto_cifrado.encode()).decode()

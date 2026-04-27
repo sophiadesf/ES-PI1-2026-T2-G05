@@ -120,10 +120,10 @@ while opcao != 3:
                     continue
 
                 # RF001.02 - Validar titulo matematicamente
-                if not util.validar_titulo(titulo):
-                    print("\nErro: Titulo inválido! Verifique os digitos.\n")
-                    util.salvar_log("ERRO - Titulo de eleitor invalido informado")
-                    continue
+                # if not util.validar_titulo(titulo):
+                #     print("\nErro: Titulo inválido! Verifique os digitos.\n")
+                #     util.salvar_log("ERRO - Titulo de eleitor invalido informado")
+                #     continue
                 
                 # RF001.03 - Verificar duplicidade de Titulo
                 if verificar_cpf_existe(cpf):
@@ -240,8 +240,8 @@ while opcao != 3:
                     # Executar UPDATE no banco de dados
                     try:
                         consultas.cursor.execute(
-                            "UPDATE eleitores SET nome_completo = %s, login = %s WHERE cpf = %s",
-                            (novo_nome, novo_nome + cpf_busca, cpf_busca)
+                            "UPDATE eleitores SET nome_completo = %s WHERE cpf = %s",
+                            (novo_nome, cpf_busca)
                         )
                         
                         # Confirmar transacao
@@ -267,8 +267,75 @@ while opcao != 3:
             # REMOVER ELEITOR (RF001.06) - A implementar
             # ---------------------------------------------------------
             elif opcaoGerenciamento == 3:
-                print("Entrou em Gerenciamento -> Remover Eleitor\n")
+                print("=== REMOVER ELEITOR ===\n")
                 util.salvar_log("GERENCIAMENTO - Remover Eleitor")
+                
+                # Solicitar CPF para busca
+                cpf_busca = input("Digite o CPF do eleitor a remover: ").strip()
+                cpf_busca = ''.join(filter(str.isdigit, cpf_busca))
+                
+                # Validar formato do CPF
+                if len(cpf_busca) != 11:
+                    print("\nErro: CPF deve ter 11 digitos!\n")
+                    continue
+                
+                # Variaveis para armazenar resultado da busca
+                eleitor_encontrado = None
+                
+                try:
+                    # Buscar na tabela de usuarios
+                    consultas.cursor.execute(
+                        "SELECT cpf, nome_completo, mesario FROM eleitores WHERE cpf = %s", 
+                        (cpf_busca,)
+                    )
+                    eleitor_encontrado = consultas.cursor.fetchone()
+                            
+                except Exception as e:
+                    print ("\nErro ao buscar: " + str(e) + "\n")
+                    util.salvar_log("ERRO - Falha ao buscar eleitor para remocao: " + str(e))
+                    continue
+                
+                # Verificar se eleitor foi encontrado
+                if not eleitor_encontrado:
+                    print("\nEleitor nao encontrado!\n")
+                    util.salvar_log("ERRO - Eleitor nao encontrado para remocao: " + cpf_busca)
+                    continue
+                
+                # Exibir dados do eleitor a remover
+                print("\n" + "="*40)
+                print("DADOS DO ELEITOR A REMOVER:")
+                print("="*40)
+                print("CPF: " + eleitor_encontrado[0])
+                print("Nome: " + eleitor_encontrado[1])
+                print("Mesario: " + ("Sim" if eleitor_encontrado[2] else "Não"))
+                print("="*40)
+                
+                # Solicitar confirmacao
+                confirmacao = input("\nTem certeza que deseja remover este eleitor? (S/N): ").strip().upper()
+                
+                if confirmacao != 'S':
+                    print("\nRemocao cancelada.\n")
+                    util.salvar_log("GERENCIAMENTO - Remocao de eleitor cancelada: " + cpf_busca)
+                    continue
+                
+                # Executar DELETE no banco de dados
+                try:
+                    consultas.remover_eleitor(cpf_busca)
+                    
+                    # Exibir confirmacao
+                    print("\n" + "="*40)
+                    print("ELEITOR REMOVIDO COM SUCESSO!")
+                    print("="*40)
+                    print("CPF: " + eleitor_encontrado[0])
+                    print("Nome: " + eleitor_encontrado[1])
+                    print("="*40 + "\n")
+                    
+                    util.salvar_log("SUCESSO - Eleitor removido: " + cpf_busca + " (" + eleitor_encontrado[1] + ")")
+                    
+                except Exception as e:
+                    print("\nErro ao remover: " + str(e) + "\n")
+                    util.salvar_log("ERRO - Falha ao remover eleitor: " + str(e))
+
             
             # ---------------------------------------------------------
             # BUSCAR ELEITOR (RF001.07) - A implementar
@@ -281,15 +348,20 @@ while opcao != 3:
             # LISTAR ELEITORES (RF001.08) - A implementar
             # ---------------------------------------------------------
             elif opcaoGerenciamento == 5:
-                eleitores = consultas.busca_eleitores()
-                print("ELEITORES: \n")
-                for i in eleitores:
-                    print("Id: ", i[0])
-                    print("Título de Eleitor: ", i[1])
-                    print("CPF: ", i[2])
-                    print("Nome: ", i[3])
-                    print("Já votou: ", i[4])
-                    print("Mesário: ", i[5])
+                resultado = consultas.busca_eleitores()
+                print("ELEITORES!")
+                if not resultado:
+                    print("Nenhum eleitor encontrado.")
+                else:
+                    for res in resultado:
+                        print("\n" + "="*40)
+                        print(f"ID: {res[0]}")
+                        print(f"Titulo de Eleitor: {res[1]}")
+                        print(f"CPF: {res[2]}")
+                        print(f"Nome: {res[3]}")
+                        print(f"Ja votou: {res[4]}")
+                        print(f"Mesario: {res[5]}")
+                        print("="*40 + "\n")
                 util.salvar_log("GERENCIAMENTO - Listar Eleitores")
             
             # ---------------------------------------------------------

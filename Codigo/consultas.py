@@ -30,12 +30,23 @@ def inserir_eleitores(titulo_eleitor, cpf, nome, senha, ja_votou, mesario):
 # inserção de dados - VOTOS
 def inserir_voto(id_candidato):
     sql = "INSERT INTO votos (id_candidato) VALUES (%s)"
-    valores = (id_candidato)
+    valores = (id_candidato,)
     cursor.execute(sql, valores)
     conexao.commit()
     print("Voto cadastrado com ID: ", cursor.lastrowid)
 
 # busca de eleitores 
 def busca_eleitores():
+    cursor = conexao.cursor()
     sql = "SELECT E.id_eleitor, E.titulo_eleitor, E.cpf, E.nome_completo, E.ja_votou, E.mesario FROM ELEITORES E ORDER BY E.id_eleitor"
-    return cursor.execute(sql)
+    cursor.execute(sql)
+    resultado = cursor.fetchall()
+    cursor.close()
+    return resultado
+
+#remover eleitor
+def remover_eleitor(cpf):
+    cursor = conexao.cursor()
+    cursor.execute("DELETE FROM eleitores WHERE cpf = %s", (cpf,))
+    conexao.commit()
+    cursor.close()

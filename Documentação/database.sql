@@ -14,7 +14,6 @@ CREATE TABLE eleitores (
     cpf VARCHAR(11) UNIQUE NOT NULL,
     -- UNIQUE impede CPFs repetidos
     nome_completo VARCHAR(100) NOT NULL,
-    login VARCHAR(50) UNIQUE NOT NULL,
     -- UNIQUE impede logins repetidos
     senha VARCHAR(255) NOT NULL,
     -- Indica se o eleitor já votou, para controle do voto único
