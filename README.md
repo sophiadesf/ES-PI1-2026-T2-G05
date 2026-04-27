@@ -10,7 +10,7 @@
 
 # Funcionalidades Principais
 - [ ] Cadastro de Candidatos
-- [ ] Cadastro de Eleitores (Usuários)
+- [X] Cadastrar/Editar/Listar/Deletar Eleitores (Usuários)
 - [ ] Realização de Voto
 - [ ] Controle de Voto Único
 - [ ] Listagem de Votantes
