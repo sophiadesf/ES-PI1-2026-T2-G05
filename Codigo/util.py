@@ -47,29 +47,8 @@ def validar_cpf(cpf):
     return True
 
 def validar_titulo(titulo):
-    # precisa ter 12 dígitos
-    if len(titulo) != 12:
-        return False
-
-    # separa partes
-    numero = titulo[:8]
-    uf = titulo[8:10]
-    dv = titulo[10:]
-
-    # calcula primeiro dígito verificador
-    soma = sum(int(numero[i]) * (9 - i) for i in range(8))
-    d1 = soma % 11
-    if d1 == 10:
-        d1 = 0
-
-    # calcula segundo dígito
-    soma = sum(int(uf[i]) * (3 - i) for i in range(2)) + d1 * 2
-    d2 = soma % 11
-    if d2 == 10:
-        d2 = 0
-
-    # compara com os dígitos informados
-    return dv == f"{d1}{d2}"
+    titulo = ''.join(filter(str.isdigit, titulo))
+    return len(titulo) == 12
    
 def gerar_chave_acesso():
     """Gera uma chave de acesso única de 8 caracteres alfanuméricos."""

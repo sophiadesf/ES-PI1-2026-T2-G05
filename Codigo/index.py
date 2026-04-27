@@ -134,15 +134,17 @@ while opcao != 3:
                 # RF001.01 - Perguntar se e mesario
                 is_mesario_input = input("O eleitor e mesario? (S/N): ").strip().upper()
                 is_mesario = is_mesario_input == 'S'
-                
+
+                if is_mesario_input not in ['S', 'N']:
+                    print("Digite apenas S ou N")
+                    continue
+
                 # RF001.04 - Gerar chave de acesso exclusiva
                 chave_acesso = util.gerar_chave_acesso()
                 
                 # Inserir no banco de dados
                 try:
-                    mesario = False
-                    if is_mesario == "S" :
-                        mesario = True
+                    mesario = 1 if is_mesario else 0
 
                     # Cadastra na tabela de eleitores
                     consultas.inserir_eleitores(titulo, cpf, nome, chave_acesso, None, mesario)
@@ -359,8 +361,8 @@ while opcao != 3:
                         print(f"Titulo de Eleitor: {res[1]}")
                         print(f"CPF: {res[2]}")
                         print(f"Nome: {res[3]}")
-                        print(f"Ja votou: {res[4]}")
-                        print(f"Mesario: {res[5]}")
+                        print(f"Ja votou: {"Não" if res[4] == None else "Sim"}")
+                        print(f"Mesario: {"Sim" if res[5] == 1 else "Não"}")
                         print("="*40 + "\n")
                 util.salvar_log("GERENCIAMENTO - Listar Eleitores")
             
