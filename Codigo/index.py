@@ -69,39 +69,58 @@ while opcao != 3:
                     print("\nErro: Nome nao pode estar vazio!\n")
                     continue
                 
-                # RF001.01 - Solicitar CPF
-                cpf = input("Digite o CPF (apenas numeros): ").strip()
-                cpf = ''.join(filter(str.isdigit, cpf))  # Remove caracteres nao numericos
                 
-                # RF001.01 - Solicitar Título de Eleitor
-                titulo = input("Digite o Título de Eleitor (apenas numeros): ").strip()
-                titulo = ''.join(filter(str.isdigit, titulo))  # Remove caracteres nao numericos
+                cpf_valido = False 
+                while not cpf_valido :
+                    # RF001.01 - Solicitar CPF
+                    cpf = input("Digite o CPF (apenas numeros): ").strip()
 
-                # RF001.02 - Validar CPF matematicamente
-                if not util.validar_cpf(cpf):
-                    print("\nErro: CPF invalido! Verifique os digitos.\n")
-                    util.salvar_log("ERRO - CPF invalido informado")
-                    continue
-                
-                # RF001.03 - Verificar duplicidade de CPF
-                if consultas.verificar_cpf_existe(cpf):
-                    print("\nErro: CPF ja cadastrado no sistema!\n")
-                    util.salvar_log("ERRO - Tentativa de cadastro com CPF duplicado")
-                    continue
+                    cpf = ''.join(filter(str.isdigit, cpf))  # Remove caracteres nao numericos
+                    # RF001.02 - Validar CPF matematicamente
+                    if not util.validar_cpf(cpf):
+                        print("\nErro: CPF invalido! Verifique os digitos. Digite um cpf válid\n")
+                        util.salvar_log("ERRO - CPF invalido informado")
+                        continue
+                    
+                    # RF001.03 - Verificar duplicidade de CPF
+                    if consultas.verificar_cpf_existe(cpf):
+                        print("\nErro: CPF ja cadastrado no sistema! Digite um cpf válido\n")
+                        util.salvar_log("ERRO - Tentativa de cadastro com CPF duplicado")
+                        continue
 
-                # RF001.02 - Validar titulo matematicamente
-                if not util.validar_titulo(titulo):
-                    print("\nErro: Titulo inválido! Verifique os digitos.\n")
-                    util.salvar_log("ERRO - Titulo de eleitor invalido informado")
-                    continue
+                    cpf_valido = True
 
-                # RF001.01 - Perguntar se e mesario
-                is_mesario_input = input("O eleitor e mesario? (S/N): ").strip().upper()
-                is_mesario = is_mesario_input == 'S'
+                titulo_valido = False 
+                while not titulo_valido:
+                    # RF001.01 - Solicitar Título de Eleitor
+                    titulo = input("Digite o Título de Eleitor (apenas numeros): ").strip()
+                    titulo = ''.join(filter(str.isdigit, titulo))  # Remove caracteres nao numericos
 
-                if is_mesario_input not in ['S', 'N']:
-                    print("Digite apenas S ou N")
-                    continue
+                    # RF001.02 - Validar titulo matematicamente
+                    if not util.validar_titulo(titulo):
+                        print("\nErro: Titulo inválido! Verifique os digitos e digite novamente!\n")
+                        util.salvar_log("ERRO - Titulo de eleitor invalido informado")
+                        continue
+
+                    # RF001.03 - Verificar duplicidade de titulo
+                    if consultas.verificar_titulo_existe(titulo):
+                        print("\nErro: titulo de eleitor ja cadastrado no sistema! Digite um titulo de eleitor válido\n")
+                        util.salvar_log("ERRO - Tentativa de cadastro com Titulo de eleitor duplicado")
+                        continue
+
+                    titulo_valido = True
+
+                resp_mesario = False 
+                while not resp_mesario:
+                    # RF001.01 - Perguntar se e mesario
+                    is_mesario_input = input("O eleitor e mesario? (S/N): ").strip().upper()
+                    is_mesario = is_mesario_input == 'S'
+
+                    if is_mesario_input not in ['S', 'N']:
+                        print("Digite apenas S ou N, tente novamente.")
+                        continue
+
+                    resp_mesario = True
 
                 # RF001.04 - Gerar chave de acesso exclusiva
                 chave_acesso = util.gerar_chave_acesso()

@@ -85,3 +85,16 @@ def verificar_cpf_existe(cpf):
     except Exception as e:
         print("Erro ao verificar CPF:", e)
         return False
+    
+def verificar_titulo_existe(titulo):
+    """
+    Verifica se o titulo de eleitor ja existe no banco de dados.
+    """
+    try:
+        # Busca na tabela de usuarios (eleitores comuns)
+        cursor.execute("SELECT 1 FROM eleitores WHERE titulo_eleitor = %s LIMIT 1", (titulo,))
+        return cursor.fetchone() is not None
+
+    except Exception as e:
+        print("Erro ao verificar titulo de eleitor:", e)
+        return False

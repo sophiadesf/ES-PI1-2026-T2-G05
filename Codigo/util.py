@@ -48,7 +48,33 @@ def validar_cpf(cpf):
 
 def validar_titulo(titulo):
     titulo = ''.join(filter(str.isdigit, titulo))
-    return len(titulo) == 12
+    
+    if len(titulo) != 12:
+        return False
+
+    numeros = list(map(int, titulo))
+    soma = 0
+    for i in range(8):
+        soma += numeros[i] * (i + 2)
+
+    resto = soma % 11
+    dv1 = 0 if resto < 2 else 11 - resto
+
+    if numeros[10] != dv1:
+        return False
+    soma = 0
+    pesos = [7, 8, 9]
+
+    # usa os 8 primeiros + UF + dv1
+    valores = numeros[:8] + numeros[8:10] + [dv1]
+
+    for i in range(len(valores)):
+        soma += valores[i] * pesos[i % 3]
+
+    resto = soma % 11
+    dv2 = 0 if resto < 2 else 11 - resto
+
+    return numeros[11] == dv2
    
 def gerar_chave_acesso():
     """Gera uma chave de acesso única de 8 caracteres alfanuméricos."""
