@@ -340,7 +340,7 @@ while opcao != 3:
 
             
             # ---------------------------------------------------------
-            # BUSCAR ELEITOR (RF001.07) - A implementar
+            # BUSCAR ELEITOR (RF001.07) 
             # ---------------------------------------------------------
             elif opcaoGerenciamento == 4:
                 print("Entrou em Gerenciamento -> Buscar Eleitor\n")
