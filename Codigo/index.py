@@ -266,7 +266,7 @@ while opcao != 3:
                     print("\nOpcao invalida!\n")
             
             # ---------------------------------------------------------
-            # REMOVER ELEITOR (RF001.06) - A implementar
+            # REMOVER ELEITOR (RF001.06) 
             # ---------------------------------------------------------
             elif opcaoGerenciamento == 3:
                 print("=== REMOVER ELEITOR ===\n")
