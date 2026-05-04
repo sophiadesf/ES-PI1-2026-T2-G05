@@ -45,36 +45,60 @@ def validar_cpf(cpf):
         return False
     
     return True
-
 def validar_titulo(titulo):
     titulo = ''.join(filter(str.isdigit, titulo))
+
+    #verificar se tem os 12 digitos 
+    if len(titulo) != 12: 
+        return false
     
-    if len(titulo) != 12:
-        return False
+    #verificar se os digitos sao iguais 
+    if titulo == titulo[0] * 12:
+        return false
+    
+    soma = 0 
+    pesos = [7,8,9]
+    #range(8) porque no titulo, o primeiro digito verificador é calculado usando os 8 primeiros numeros 
+    for i in range (8): 
+        soma += int(titulo[i]) * pesos[i % 3]
 
-    numeros = list(map(int, titulo))
-    soma = 0
-    for i in range(8):
-        soma += numeros[i] * (i + 2)
+    resto = soma % 11 
 
-    resto = soma % 11
-    dv1 = 0 if resto < 2 else 11 - resto
+    if resto < 2: 
+        digito1 = 0 
+    else: 
+        digito1 = 11 - resto 
 
-    if numeros[10] != dv1:
-        return False
-    soma = 0
-    pesos = [7, 8, 9]
+    #verifica o primeiro digito
+    if int(titulo[10]) != digito1: 
+        return False 
+    
+    #calcula o segundo digito 
+    soma = 0 
 
-    # usa os 8 primeiros + UF + dv1
-    valores = numeros[:8] + numeros[8:10] + [dv1]
+    for i in range(8): 
+        soma += int(titulo[i]) * ((i % 3) + 7)
 
-    for i in range(len(valores)):
-        soma += valores[i] * pesos[i % 3]
+    #calculo dos 2 numeros do estado UF e do 1 digito verificador
+    soma += int(titulo[8]) * 7 
+    soma += int(titulo[9]) * 8 
+    soma += digito1 * 9 
 
-    resto = soma % 11
-    dv2 = 0 if resto < 2 else 11 - resto
+    resto = soma % 11 
 
-    return numeros[11] == dv2
+    if resto < 2: 
+        digito2 = 0
+    else: 
+        digito2 = 11 - resto 
+
+    #verifica o segundo digito 
+    if int(titulo[11]) != digito2: 
+        return False 
+    
+    return True 
+        
+             
+   
    
 def gerar_chave_acesso():
     """Gera uma chave de acesso única de 8 caracteres alfanuméricos."""
