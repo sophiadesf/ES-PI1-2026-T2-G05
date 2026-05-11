@@ -472,3 +472,29 @@ def fechar_urna():
         return True
     except Exception as e:
         return False
+
+def listar_protocolos_votacao():
+    """
+    Retorna lista de todos os protocolos de votação gerados conforme RF002.02.02.
+    Ordena em ordem alfabética para auditoria.
+    
+    Args:
+        None
+    
+    Returns:
+        list: Lista de protocolos em ordem alfabética, ou lista vazia se nenhum
+    """
+    try:
+        sql = "SELECT protocolo FROM votos ORDER BY protocolo ASC"
+        cursor.execute(sql)
+        resultado = cursor.fetchall()
+        
+        if not resultado:
+            return []
+        
+        protocolos = [protocolo[0] for protocolo in resultado]
+        return protocolos
+    
+    except Exception as e:
+        print(f"Erro ao listar protocolos: {str(e)}")
+        return []
