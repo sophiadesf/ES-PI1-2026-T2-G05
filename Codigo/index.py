@@ -25,10 +25,9 @@ def menu_votacao_iniciada():
             opcaoVotacaoIniciado = -1
         print("----------------------------------\n")
 
-        # RF002.02.01 - votar
+        # RF002.01.06 - Votação
         if opcaoVotacaoIniciado == 1:
             
-            util.salvar_log("VOTACAO Iniciada - Votar")
             eleitor_valido = False
 
             while not eleitor_valido:
@@ -38,12 +37,12 @@ def menu_votacao_iniciada():
                 
                 if not consultas.verifica_eleitor(titulo, cpf_4, chave, 0):
                     print("\nErro: Eleitor invalido! Verifique os dados e tente novamente\n")
-                    util.salvar_log("ERRO - Votar -> eleitor invalido")
+                    util.registrar_log_tentativa_acesso_negado("Validação de eleitor falhou")
                     continue
                 
                 if consultas.verifica_javotou(titulo, cpf_4, chave):
                     print("\nErro: Eleitor invalido! Esse eleitor já votou nessa eleição\n")
-                    util.salvar_log("ERRO - Votar -> Esse eleitor já votou nessa eleiçãoo")
+                    util.registrar_log_voto_duplo()
                     continue
             
                 eleitor_valido = True
@@ -76,9 +75,10 @@ def menu_votacao_iniciada():
             if protocolo:
                 print("\nVOTO CONFIRMADO!")
                 print("PROTOCOLO:", protocolo)
+                util.registrar_log_voto_sucesso()
             print("----------------------------------\n")
 
-        # RF002.02.02 - encerrar sistema de votação
+        # RF002.01.07 - Encerrar sistema de votação
         elif opcaoVotacaoIniciado == 2:
             mesario_valido = False
 
@@ -89,7 +89,7 @@ def menu_votacao_iniciada():
                 
                 if not consultas.verifica_eleitor(titulo, cpf_4, chave, 1):
                     print("\nErro: Mesario invalido! Verifique os dados e tente novamente\n")
-                    util.salvar_log("ERRO - Encerrar votação -> mesario invalido")
+                    util.registrar_log_tentativa_acesso_negado("Validação de mesário falhou")
                     continue
 
                 mesario_valido = True
@@ -112,7 +112,7 @@ def menu_votacao_iniciada():
                     
                     if not consultas.verifica_eleitor(titulo, cpf_4, chave_acesso, 1):
                         print("\nErro: Chave inválida! Verifique tente novamente\n")
-                        util.salvar_log("ERRO - Encerrar votação -> chave de acesso invalida")
+                        util.registrar_log_tentativa_acesso_negado("Chave de acesso inválida para encerramento")
                         continue
 
                     chave_valida = True
@@ -120,12 +120,10 @@ def menu_votacao_iniciada():
                 print("\nEncerrando votação...")
                 if consultas.fechar_urna():
                     print("VOTAÇÃO ENCERRADA COM SUCESSO!")
-                    util.salvar_log("VOTACAO - encerrada com sucesso")
+                    util.registrar_log_encerramento()
                     break
                 else:
                     print("Erro ao encerrar votação.")
-                            
-            util.salvar_log("VOTACAO Iniciada - encerrar sistema de votação")
                 
 opcao = 0 
 while opcao != 3: 
@@ -297,7 +295,7 @@ while opcao != 3:
                 try:
                     # Buscar na tabela de usuarios
                     consultas.cursor.execute(
-                        "SELECT cpf, nome_completo, titulo_eleitor, mesario senha FROM eleitores WHERE cpf = %s", 
+                        "SELECT cpf, nome_completo, titulo_eleitor, mesario, senha FROM eleitores WHERE cpf = %s", 
                         (cpf_busca,)
                     )
                     eleitor_encontrado = consultas.cursor.fetchone()
@@ -476,7 +474,7 @@ while opcao != 3:
                 util.salvar_log("GERENCIAMENTO - Buscar Eleitor")
             
             # ---------------------------------------------------------
-            # LISTAR ELEITORES (RF001.08) - A implementar
+            # LISTAR ELEITORES (RF001.08) 
             # ---------------------------------------------------------
             elif opcaoGerenciamento == 5:
                 resultado = consultas.busca_eleitores()
@@ -499,8 +497,300 @@ while opcao != 3:
             # CADASTRAR CANDIDATOS (RF001.09 a RF001.14) - Opcional
             # ---------------------------------------------------------
             elif opcaoGerenciamento == 6:
-                print("Entrou em Gerenciamento -> Cadastrar Candidatos\n")
-                util.salvar_log("GERENCIAMENTO - Cadastrar Candidatos")
+                print("=== GERENCIAMENTO DE CANDIDATOS ===\n")
+                util.salvar_log("GERENCIAMENTO - Candidatos")
+
+                opcaoCandidatos = -1
+                while opcaoCandidatos != 0:
+                    print("-----------GERENCIAMENTO CANDIDATOS-----------")
+                    print("1 - Cadastrar Candidato")
+                    print("2 - Editar Candidato")
+                    print("3 - Remover Candidato")
+                    print("4 - Buscar Candidato")
+                    print("5 - Listar Candidatos")
+                    print("0 - Voltar")
+                    print("----------------------------------")
+                    
+                    try:
+                        opcaoCandidatos = int(input("Selecione uma opcao: "))
+                    except:
+                        print("Digite um numero valido!")
+                        opcaoCandidatos = -1
+                    print("----------------------------------\n")
+
+                    # -------------------------------------------------
+                    # CADASTRAR CANDIDATO (RF001.09)
+                    # -------------------------------------------------
+                    if opcaoCandidatos == 1:
+                        print("=== CADASTRO DE CANDIDATO ===\n")
+                        util.salvar_log("GERENCIAMENTO CANDIDATOS - Cadastrar")
+                        
+                        numero_valido = False
+                        while not numero_valido:
+                            try:
+                                numero = int(input("Digite o número de votação: "))
+                                
+                                if consultas.verificar_numero_candidato_existe(numero):
+                                    print("\nErro: Número de candidato já cadastrado! Digite outro número\n")
+                                    util.salvar_log("ERRO - Tentativa de cadastro com número duplicado")
+                                    continue
+                                
+                                numero_valido = True
+                            except ValueError:
+                                print("\nErro: Digite um número inteiro válido\n")
+                        
+                        nome_valido = False
+                        while not nome_valido:
+                            nome = input("Digite o nome do candidato: ").strip()
+                            
+                            if len(nome) < 3:
+                                print("\nErro: Nome deve ter pelo menos 3 caracteres\n")
+                                continue
+                            
+                            nome_valido = True
+                        
+                        partido = input("Digite o partido/legenda: ").strip()
+                        
+                        if not partido:
+                            partido = "Sem Partido"
+                        
+                        try:
+                            id_candidato = consultas.inserir_candidatos(numero, nome, partido)
+                            if id_candidato:
+                                print("\n" + "="*40)
+                                print("CANDIDATO CADASTRADO COM SUCESSO!")
+                                print("="*40)
+                                print("Número: " + str(numero))
+                                print("Nome: " + nome)
+                                print("Partido: " + partido)
+                                print("="*40 + "\n")
+                                util.salvar_log(f"SUCESSO - Candidato cadastrado: {nome} (Nº {numero})")
+                            else:
+                                print("\nErro ao cadastrar candidato\n")
+                        except Exception as e:
+                            print(f"\nErro ao cadastrar: {str(e)}\n")
+                            util.salvar_log(f"ERRO - Falha ao cadastrar candidato: {str(e)}")
+                    
+                    # -------------------------------------------------
+                    # EDITAR CANDIDATO (RF001.11)
+                    # -------------------------------------------------
+                    elif opcaoCandidatos == 2:
+                        print("=== EDITAR CANDIDATO ===\n")
+                        util.salvar_log("GERENCIAMENTO CANDIDATOS - Editar")
+                        
+                        try:
+                            numero_busca = int(input("Digite o número do candidato a editar: "))
+                            
+                            candidato = consultas.buscar_candidato_por_numero(numero_busca)
+                            
+                            if not candidato:
+                                print("\nCandidato não encontrado!\n")
+                                util.salvar_log(f"ERRO - Candidato não encontrado: {numero_busca}")
+                                continue
+                            
+                            id_cand, numero, nome, partido = candidato
+                            
+                            print("\n" + "="*40)
+                            print("DADOS ATUAIS:")
+                            print("="*40)
+                            print("Número: " + str(numero))
+                            print("Nome: " + nome)
+                            print("Partido: " + partido)
+                            print("="*40 + "\n")
+                            
+                            print("O que deseja editar?")
+                            print("1 - Número")
+                            print("2 - Nome")
+                            print("3 - Partido")
+                            print("0 - Cancelar")
+                            
+                            try:
+                                opcao_edicao = int(input("Opção: "))
+                            except:
+                                print("\nOpção inválida!\n")
+                                continue
+                            
+                            if opcao_edicao == 0:
+                                print("\nEdição cancelada.\n")
+                                continue
+                            
+                            elif opcao_edicao == 1:
+                                numero_novo_valido = False
+                                while not numero_novo_valido:
+                                    try:
+                                        numero_novo = int(input("Digite o novo número: "))
+                                        
+                                        if numero_novo != numero and consultas.verificar_numero_candidato_existe(numero_novo):
+                                            print("\nErro: Este número já existe! Digite outro\n")
+                                            continue
+                                        
+                                        numero_novo_valido = True
+                                    except ValueError:
+                                        print("\nErro: Digite um número inteiro válido\n")
+                                
+                                if consultas.atualizar_candidato(numero, numero_novo, nome, partido):
+                                    print("\n" + "="*40)
+                                    print("CANDIDATO ATUALIZADO COM SUCESSO!")
+                                    print("="*40)
+                                    print("Número anterior: " + str(numero))
+                                    print("Número novo: " + str(numero_novo))
+                                    print("="*40 + "\n")
+                                    util.salvar_log(f"SUCESSO - Candidato editado: número {numero} → {numero_novo}")
+                                else:
+                                    print("\nErro ao atualizar candidato\n")
+                            
+                            elif opcao_edicao == 2:
+                                nome_novo = input("Digite o novo nome: ").strip()
+                                if not nome_novo:
+                                    print("\nErro: Nome não pode estar vazio!\n")
+                                    continue
+                                
+                                if consultas.atualizar_candidato(numero, numero, nome_novo, partido):
+                                    print("\n" + "="*40)
+                                    print("CANDIDATO ATUALIZADO COM SUCESSO!")
+                                    print("="*40)
+                                    print("Nome anterior: " + nome)
+                                    print("Nome novo: " + nome_novo)
+                                    print("="*40 + "\n")
+                                    util.salvar_log(f"SUCESSO - Candidato editado: {nome} → {nome_novo}")
+                                else:
+                                    print("\nErro ao atualizar candidato\n")
+                            
+                            elif opcao_edicao == 3:
+                                partido_novo = input("Digite o novo partido: ").strip()
+                                if not partido_novo:
+                                    partido_novo = "Sem Partido"
+                                
+                                if consultas.atualizar_candidato(numero, numero, nome, partido_novo):
+                                    print("\n" + "="*40)
+                                    print("CANDIDATO ATUALIZADO COM SUCESSO!")
+                                    print("="*40)
+                                    print("Partido anterior: " + partido)
+                                    print("Partido novo: " + partido_novo)
+                                    print("="*40 + "\n")
+                                    util.salvar_log(f"SUCESSO - Candidato editado: partido {partido} → {partido_novo}")
+                                else:
+                                    print("\nErro ao atualizar candidato\n")
+                            else:
+                                print("\nOpção inválida!\n")
+                        
+                        except ValueError:
+                            print("\nErro: Digite um número válido!\n")
+                        except Exception as e:
+                            print(f"\nErro: {str(e)}\n")
+                            util.salvar_log(f"ERRO - Falha ao editar candidato: {str(e)}")
+                    
+                    # -------------------------------------------------
+                    # REMOVER CANDIDATO (RF001.12)
+                    # -------------------------------------------------
+                    elif opcaoCandidatos == 3:
+                        print("=== REMOVER CANDIDATO ===\n")
+                        util.salvar_log("GERENCIAMENTO CANDIDATOS - Remover")
+                        
+                        try:
+                            numero_busca = int(input("Digite o número do candidato a remover: "))
+                            
+                            candidato = consultas.buscar_candidato_por_numero(numero_busca)
+                            
+                            if not candidato:
+                                print("\nCandidato não encontrado!\n")
+                                util.salvar_log(f"ERRO - Candidato não encontrado para remoção: {numero_busca}")
+                                continue
+                            
+                            id_cand, numero, nome, partido = candidato
+                            
+                            print("\n" + "="*40)
+                            print("DADOS DO CANDIDATO A REMOVER:")
+                            print("="*40)
+                            print("Número: " + str(numero))
+                            print("Nome: " + nome)
+                            print("Partido: " + partido)
+                            print("="*40 + "\n")
+                            
+                            confirmacao = input("Tem certeza que deseja remover este candidato? (S/N): ").strip().upper()
+                            
+                            if confirmacao != 'S':
+                                print("\nRemoção cancelada.\n")
+                                util.salvar_log(f"GERENCIAMENTO CANDIDATOS - Remoção cancelada: {numero}")
+                                continue
+                            
+                            if consultas.remover_candidato(numero):
+                                print("\n" + "="*40)
+                                print("CANDIDATO REMOVIDO COM SUCESSO!")
+                                print("="*40)
+                                print("Número: " + str(numero))
+                                print("Nome: " + nome)
+                                print("="*40 + "\n")
+                                util.salvar_log(f"SUCESSO - Candidato removido: {nome} (Nº {numero})")
+                            else:
+                                print("\nErro ao remover candidato\n")
+                        
+                        except ValueError:
+                            print("\nErro: Digite um número válido!\n")
+                        except Exception as e:
+                            print(f"\nErro: {str(e)}\n")
+                            util.salvar_log(f"ERRO - Falha ao remover candidato: {str(e)}")
+                    
+                    # -------------------------------------------------
+                    # BUSCAR CANDIDATO (RF001.13)
+                    # -------------------------------------------------
+                    elif opcaoCandidatos == 4:
+                        print("=== BUSCAR CANDIDATO ===\n")
+                        util.salvar_log("GERENCIAMENTO CANDIDATOS - Buscar")
+                        
+                        try:
+                            numero_busca = int(input("Digite o número do candidato: "))
+                            
+                            candidato = consultas.buscar_candidato_por_numero(numero_busca)
+                            
+                            if not candidato:
+                                print("\nCandidato não encontrado!\n")
+                            else:
+                                id_cand, numero, nome, partido = candidato
+                                print("\n" + "="*40)
+                                print("CANDIDATO ENCONTRADO:")
+                                print("="*40)
+                                print("Número: " + str(numero))
+                                print("Nome: " + nome)
+                                print("Partido: " + partido)
+                                print("="*40 + "\n")
+                        
+                        except ValueError:
+                            print("\nErro: Digite um número válido!\n")
+                        except Exception as e:
+                            print(f"\nErro: {str(e)}\n")
+                    
+                    # -------------------------------------------------
+                    # LISTAR CANDIDATOS (RF001.14)
+                    # -------------------------------------------------
+                    elif opcaoCandidatos == 5:
+                        print("=== LISTAGEM DE CANDIDATOS ===\n")
+                        util.salvar_log("GERENCIAMENTO CANDIDATOS - Listar")
+                        
+                        try:
+                            candidatos = consultas.buscar_candidatos_todos()
+                            
+                            if not candidatos:
+                                print("Nenhum candidato cadastrado.\n")
+                            else:
+                                print("="*60)
+                                print(f"{'Nº':<5} {'Nome':<30} {'Partido':<20}")
+                                print("="*60)
+                                for cand in candidatos:
+                                    id_cand, numero, nome, partido = cand
+                                    print(f"{numero:<5} {nome:<30} {partido:<20}")
+                                print("="*60 + "\n")
+                        
+                        except Exception as e:
+                            print(f"\nErro ao listar candidatos: {str(e)}\n")
+                    
+                    elif opcaoCandidatos == 0:
+                        print("Voltando ao menu de gerenciamento...\n")
+                        util.salvar_log("GERENCIAMENTO CANDIDATOS - Voltar")
+                    
+                    else:
+                        print("Opção inválida!\n")
+                        util.salvar_log("GERENCIAMENTO CANDIDATOS - Opção inválida")
             
             # Voltar ao menu principal
             elif opcaoGerenciamento == 0:
@@ -555,7 +845,7 @@ while opcao != 3:
                         
                         if not consultas.verifica_eleitor(titulo, cpf_4, chave, 1):
                             print("\nErro: Mesario invalido! Verifique os dados e tente novamente\n")
-                            util.salvar_log("ERRO - Abrir votação -> mesario invalido")
+                            util.registrar_log_tentativa_acesso_negado("Validação de mesário falhou")
                             continue
 
                         mesario_valido = True
@@ -564,6 +854,7 @@ while opcao != 3:
                     print("\nExecutando a Zerézima...\n")
                     consultas.limpa_votos()
                     consultas.abrir_urna()
+                    util.registrar_log_abertura()
                     menu_votacao_iniciada()
                     print("----------------------------------\n")
 
@@ -595,17 +886,18 @@ while opcao != 3:
 
                         # RF002.02.01 - Logs de ocorrencias
                         if opcaoVotacaoAuditoria == 1:
-                            print("Entrou em Votacao Auditoria -> Exibição de Logs de Ocorrências\n")
-                            util.salvar_log("VOTACAO AUDITORIA - Exibição de Logs de Ocorrências")
+                            print("EXIBIÇÃO DE LOGS DE OCORRÊNCIAS")
+                            util.exibir_logs()
+                            util.salvar_log("AUDITORIA - Exibição de Logs de Ocorrências")
                         
                         # RF002.02.02 - Exibição dos Protocolos de Votação de votacao
                         elif opcaoVotacaoAuditoria == 2:
                             print("Entrou em Votacao Auditoria -> Exibição dos Protocolos de Votação\n")
-                            util.salvar_log("VOTACAO AUDITORIA - Exibição dos Protocolos de Votação")
+                            util.salvar_log("AUDITORIA - Exibição dos Protocolos de Votação")
                         
                         elif opcaoVotacaoAuditoria == 0:
                             print("Voltando...\n")
-                            util.salvar_log("VOTACAO AUDITORIA - Voltar")
+                            util.salvar_log("AUDITORIA - Voltar")
                         
                         else:
                             print("Votacao -> Auditoria -> Opcao invalida\n")
