@@ -890,10 +890,27 @@ while opcao != 3:
                             util.exibir_logs()
                             util.salvar_log("AUDITORIA - Exibição de Logs de Ocorrências")
                         
-                        # RF002.02.02 - Exibição dos Protocolos de Votação de votacao
+                     # RF002.02.02 - Exibição dos Protocolos de Votação de votacao
                         elif opcaoVotacaoAuditoria == 2:
-                            print("Entrou em Votacao Auditoria -> Exibição dos Protocolos de Votação\n")
+                            print("=== EXIBIÇÃO DOS PROTOCOLOS DE VOTAÇÃO ===\n")
                             util.salvar_log("AUDITORIA - Exibição dos Protocolos de Votação")
+                            
+                            protocolos = consultas.listar_protocolos_votacao()
+                            
+                            if not protocolos:
+                                print("Nenhum protocolo registrado ainda.\n")
+                            else:
+                                print("="*60)
+                                print("PROTOCOLOS DE VOTAÇÃO GERADOS")
+                                print("="*60)
+                                print(f"Total de protocolos: {len(protocolos)}\n")
+                                
+                                for i, protocolo in enumerate(protocolos, 1):
+                                    print(f"{i}. {protocolo}")
+                                
+                                print("\n" + "="*60)
+                                print("Obs: Protocolos em ordem alfabética para auditoria")
+                                print("="*60 + "\n")
                         
                         elif opcaoVotacaoAuditoria == 0:
                             print("Voltando...\n")
