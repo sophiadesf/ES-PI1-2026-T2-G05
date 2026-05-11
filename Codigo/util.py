@@ -105,3 +105,36 @@ def gerar_chave_acesso(nome):
     numeros = ''.join(random.choices(string.digits, k=4))
 
     return parte1 + parte2 + numeros
+
+# solicitação de dados
+def abrir_sistema():
+    print("Sistema aberto")
+    titulo = input("Digite o título de Eleitor: ")
+    cpf_4 = input("Digite os 4 primeiros dígitos do CPF: ")
+    chave = input("Digite a chave de acesso: ")
+
+# verifica mesario
+def verifica_mesario():
+    sql = "SELECT mesario FROM eleitores WHERE titulo_eleitor=%s AND LEFT(cpf,4)=%s AND senha=%s"
+    cursor.execute(sql, (titulo, cpf_4, chave))
+    usuario_encontrado = None
+    for linha in cursor:
+        usuario_encontrado = linha
+
+#limpa votos
+def limpa_votos():
+    print("Iniciando zerézima")
+    cursor.execute("DELETE FROM votos") 
+    conexao.commit() 
+    print("Todos os votos anteriores foram apagados ")
+
+# lista candidatos
+def lista_candidatos():
+    print("Todos os candidatos estão com 0 votos:")
+    cursor.execute("SELECT numero, nome_candidato FROM candidatos")
+    
+    for c in cursor:
+        print(f"Candidato: {c['nome_candidato']} | Número: {c['numero']} | Votos: 0")
+
+    print("\nZerézima concluída.")
+
