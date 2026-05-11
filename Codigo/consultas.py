@@ -1,7 +1,12 @@
 import mysql.connector
 from datetime import datetime
-import util as util       # Modulo de funcoes utilitarias (validacao, logs, etc.)
-# conexão com o banco de dados
+import util as util
+
+"""
+Módulo de conexão e consultas com banco de dados MySQL
+Responsável por todas as operações CRUD e autenticação
+"""
+
 conexao = mysql.connector.connect(
     host =  "localhost",
     user = "root",
@@ -11,25 +16,162 @@ conexao = mysql.connector.connect(
 
 cursor = conexao.cursor()
 
-# inserção de dados - CANDIDATOS
 def inserir_candidatos(numero, nome, partido):
-    sql = "INSERT INTO candidatos (numero, nome_candidato, partido) VALUES (%s, %s, %s)"
-    valores = (numero, nome, partido)
-    cursor.execute(sql, valores)
-    conexao.commit()
-    print("Candidato cadastrado com ID: ", cursor.lastrowid)
+    """
+    Insere um novo candidato no banco de dados conforme RF001.09.
+    
+    Args:
+        numero (int): Número único de votação do candidato
+        nome (str): Nome completo do candidato
+        partido (str): Sigla ou nome do partido
+    
+    Returns:
+        int: ID do candidato inserido ou None em caso de erro
+    """
+    try:
+        sql = "INSERT INTO candidatos (numero, nome_candidato, partido) VALUES (%s, %s, %s)"
+        valores = (numero, nome, partido)
+        cursor.execute(sql, valores)
+        conexao.commit()
+        id_candidato = cursor.lastrowid
+        print("Candidato cadastrado com ID: ", id_candidato)
+        return id_candidato
+    except Exception as e:
+        print(f"Erro ao cadastrar candidato: {str(e)}")
+        return None
+
+def verificar_numero_candidato_existe(numero):
+    """
+    Verifica se o número do candidato já existe no banco de dados conforme RF001.10.
+    
+    Args:
+        numero (int): Número de votação a ser verificado
+    
+    Returns:
+        bool: True se número já existe, False caso contrário
+    """
+    try:
+        cursor.execute("SELECT 1 FROM candidatos WHERE numero = %s LIMIT 1", (numero,))
+        return cursor.fetchone() is not None
+    except Exception as e:
+        print(f"Erro ao verificar número do candidato: {str(e)}")
+        return False
+
+def buscar_candidato_por_numero(numero):
+    """
+    Busca um candidato pelo número conforme RF001.13.
+    
+    Args:
+        numero (int): Número de votação do candidato
+    
+    Returns:
+        tuple: Tupla com dados do candidato ou None se não encontrado
+    """
+    try:
+        cursor.execute(
+            "SELECT id_candidato, numero, nome_candidato, partido FROM candidatos WHERE numero = %s",
+            (numero,)
+        )
+        return cursor.fetchone()
+    except Exception as e:
+        print(f"Erro ao buscar candidato: {str(e)}")
+        return None
+
+def buscar_candidatos_todos():
+    """
+    Busca todos os candidatos cadastrados conforme RF001.14.
+    
+    Args:
+        None
+    
+    Returns:
+        list: Lista de tuplas com dados de todos os candidatos
+    """
+    try:
+        cursor.execute("SELECT id_candidato, numero, nome_candidato, partido FROM candidatos ORDER BY nome_candidato")
+        return cursor.fetchall()
+    except Exception as e:
+        print(f"Erro ao buscar candidatos: {str(e)}")
+        return []
+
+def atualizar_candidato(numero_antigo, numero_novo, nome, partido):
+    """
+    Atualiza informações de um candidato conforme RF001.11.
+    Permite editar número (com validação de unicidade), nome e partido.
+    
+    Args:
+        numero_antigo (int): Número anterior do candidato
+        numero_novo (int): Novo número de votação
+        nome (str): Novo nome do candidato
+        partido (str): Novo partido do candidato
+    
+    Returns:
+        bool: True se atualização foi bem-sucedida, False caso contrário
+    """
+    try:
+        sql = "UPDATE candidatos SET numero = %s, nome_candidato = %s, partido = %s WHERE numero = %s"
+        cursor.execute(sql, (numero_novo, nome, partido, numero_antigo))
+        conexao.commit()
+        return cursor.rowcount > 0
+    except Exception as e:
+        print(f"Erro ao atualizar candidato: {str(e)}")
+        return False
+
+def remover_candidato(numero):
+    """
+    Remove um candidato do banco de dados conforme RF001.12.
+    
+    Args:
+        numero (int): Número de votação do candidato a remover
+    
+    Returns:
+        bool: True se remoção foi bem-sucedida, False caso contrário
+    """
+    try:
+        cursor.execute("DELETE FROM candidatos WHERE numero = %s", (numero,))
+        conexao.commit()
+        return cursor.rowcount > 0
+    except Exception as e:
+        print(f"Erro ao remover candidato: {str(e)}")
+        return False
 
 
-# inserção de dados - ELEITORES 
 def inserir_eleitores(titulo_eleitor, cpf, nome, senha, ja_votou, mesario):
+    """
+    Insere um novo eleitor no banco de dados conforme RF001.01.
+    
+    Args:
+        titulo_eleitor (str): Título de eleitor validado (12 dígitos)
+        cpf (str): CPF validado (11 dígitos)
+        nome (str): Nome completo do eleitor
+        senha (str): Chave de acesso gerada
+        ja_votou (int): Status de votação (None ou 1)
+        mesario (int): Indica se é mesário (0 ou 1)
+    
+    Returns:
+        None
+    """
     sql = "INSERT INTO eleitores (titulo_eleitor, cpf, nome_completo, senha, ja_votou, mesario) VALUES (%s, %s, %s, %s, %s, %s)"
-    valores = (titulo_eleitor, cpf, nome, senha, ja_votou, mesario) #confirmar como salvar a senha com hash
+    valores = (titulo_eleitor, cpf, nome, senha, ja_votou, mesario)
     cursor.execute(sql, valores)
     conexao.commit()
     print("Eleitor cadastrado com ID: ", cursor.lastrowid)
     
-# inserção de dados - VOTOS
 def inserir_voto(id_candidato, numero_candidato, titulo, cpf, chave):
+    """
+    Insere um voto no banco de dados conforme RF002.01.06.07.
+    Gera protocolo único e criptografado (RNF005).
+    
+    Args:
+        id_candidato (int): ID do candidato votado
+        numero_candidato (int): Número do candidato
+        titulo (str): Título do eleitor (para rastreabilidade)
+        cpf (str): Primeiros 4 dígitos do CPF (para rastreabilidade)
+        chave (str): Chave de acesso do eleitor
+    
+    Returns:
+        str: Protocolo de votação gerado ou None em caso de erro
+    """
     try:
         protocolo = util.gerar_protocolo(numero_candidato)
         sql = "INSERT INTO votos (id_candidato, data_hora, protocolo) VALUES (%s, %s, %s)"
@@ -43,20 +185,31 @@ def inserir_voto(id_candidato, numero_candidato, titulo, cpf, chave):
     except Exception as e:
         print("Erro ao cadastrar voto:", e)
         return None
-    
-# busca de eleitores 
 def busca_eleitores():
-    cursor = conexao.cursor()
+    """
+    Busca e retorna todos os eleitores cadastrados conforme RF001.08.
+    
+    Args:
+        None
+    
+    Returns:
+        list: Lista de tuplas com dados de todos os eleitores
+    """
     sql = "SELECT E.id_eleitor, E.titulo_eleitor, E.cpf, E.nome_completo, E.ja_votou, E.mesario FROM ELEITORES E ORDER BY E.id_eleitor"
     cursor.execute(sql)
     resultado = cursor.fetchall()
-    cursor.close()
     return resultado
 
-# busca de eleitores por pesquisa
 def filtra_eleitores(pesquisa):
-    cursor = conexao.cursor()
+    """
+    Busca eleitores por título, nome ou CPF conforme RF001.07.
     
+    Args:
+        pesquisa (str): Termo de busca (título, nome ou CPF)
+    
+    Returns:
+        list: Lista de tuplas com eleitores encontrados
+    """
     sql = "SELECT E.id_eleitor, E.titulo_eleitor, E.cpf, E.nome_completo, E.ja_votou, E.mesario FROM ELEITORES E WHERE E.titulo_eleitor LIKE %s OR E.nome_completo LIKE %s OR E.cpf LIKE %s ORDER BY E.id_eleitor"
     
     valor = f"%{pesquisa}%"
@@ -64,30 +217,33 @@ def filtra_eleitores(pesquisa):
 
     cursor.execute(sql, valores)
     resultado = cursor.fetchall()
-    cursor.close()
     
     return resultado
 
-#remover eleitor
 def remover_eleitor(cpf):
-    cursor = conexao.cursor()
+    """
+    Remove um eleitor do banco de dados conforme RF001.06.
+    
+    Args:
+        cpf (str): CPF do eleitor a remover
+    
+    Returns:
+        None
+    """
     cursor.execute("DELETE FROM eleitores WHERE cpf = %s", (cpf,))
     conexao.commit()
-    cursor.close()
 
 def verificar_cpf_existe(cpf):
     """
-    Verifica se o CPF ja existe no banco de dados.
-    Busca nas tabelas 'eleitores' para evitar duplicidade.
+    Verifica se o CPF já existe no banco de dados conforme RF001.03.
     
-    Parametros:
-        cpf (str): CPF a ser verificado (apenas numeros)
+    Args:
+        cpf (str): CPF a ser verificado (apenas números)
     
-    Retorna:
-        bool: True se CPF ja existe, False caso contrario
+    Returns:
+        bool: True se CPF já existe, False caso contrário
     """
     try:
-        # Busca na tabela de usuarios (eleitores comuns)
         cursor.execute("SELECT 1 FROM eleitores WHERE cpf = %s LIMIT 1", (cpf,))
         return cursor.fetchone() is not None
 
@@ -97,10 +253,15 @@ def verificar_cpf_existe(cpf):
     
 def verificar_titulo_existe(titulo):
     """
-    Verifica se o titulo de eleitor ja existe no banco de dados.
+    Verifica se o título de eleitor já existe no banco de dados conforme RF001.03.
+    
+    Args:
+        titulo (str): Título de eleitor a ser verificado
+    
+    Returns:
+        bool: True se título já existe, False caso contrário
     """
     try:
-        # Busca na tabela de usuarios (eleitores comuns)
         cursor.execute("SELECT 1 FROM eleitores WHERE titulo_eleitor = %s LIMIT 1", (titulo,))
         return cursor.fetchone() is not None
 
@@ -108,10 +269,18 @@ def verificar_titulo_existe(titulo):
         print("Erro ao verificar titulo de eleitor:", e)
         return False
     
-# verifica eleitor - tipo = 1 ? mesario : eleitor
 def verifica_eleitor(titulo, cpf_4, chave, tipo):
     """
-        Verifica se o mesario/eleitor existe no banco. 
+    Verifica se eleitor/mesário existe e tem credenciais válidas conforme RF002.01.01 e RF002.01.06.01.
+    
+    Args:
+        titulo (str): Título de eleitor
+        cpf_4 (str): Primeiros 4 dígitos do CPF
+        chave (str): Chave de acesso do eleitor
+        tipo (int): 0 para eleitor comum, 1 para mesário
+    
+    Returns:
+        bool: True se credenciais são válidas, False caso contrário
     """
     try:
         sql = "SELECT nome_completo, mesario FROM eleitores WHERE titulo_eleitor=%s AND LEFT(cpf,4)=%s AND senha=%s "
@@ -123,10 +292,17 @@ def verifica_eleitor(titulo, cpf_4, chave, tipo):
         print("Erro ao verificar se o mesario existe no banco:", e)
         return False
 
-# verifica eleitor - tipo = 1 ? mesario : eleitor
 def verifica_javotou(titulo, cpf_4, chave):
     """
-        Retorna true se der erro ou se o usuario ja votou
+    Verifica se eleitor já votou conforme RF002.01.06.02.
+    
+    Args:
+        titulo (str): Título de eleitor
+        cpf_4 (str): Primeiros 4 dígitos do CPF
+        chave (str): Chave de acesso do eleitor
+    
+    Returns:
+        bool: True se eleitor já votou, False caso contrário
     """
     try:
         sql = "SELECT ja_votou FROM eleitores WHERE titulo_eleitor=%s AND LEFT(cpf,4)=%s AND senha=%s"
@@ -138,7 +314,6 @@ def verifica_javotou(titulo, cpf_4, chave):
 
         ja_votou = resultado[0]
 
-        # trata None
         if ja_votou is None:
             return False
 
@@ -146,9 +321,17 @@ def verifica_javotou(titulo, cpf_4, chave):
     except Exception as e:
         print("Erro ao verificar se o mesario existe no banco:", e)
         return False
-    
-#limpa votos
 def limpa_votos():
+    """
+    Executa a Zerézima conforme RF002.01.04-05.
+    Limpa todos os votos anteriores e exibe lista de candidatos com zero votos.
+    
+    Args:
+        None
+    
+    Returns:
+        None
+    """
     print("Iniciando zerézima")
     cursor.execute("DELETE FROM votos") 
     conexao.commit() 
@@ -156,8 +339,17 @@ def limpa_votos():
     lista_candidatos()
 
     
-# lista candidatos
 def lista_candidatos():
+    """
+    Lista todos os candidatos com suas contagens de votos atuais.
+    Utilizado na Zerézima para garantir que todos têm zero votos.
+    
+    Args:
+        None
+    
+    Returns:
+        None
+    """
     print("Todos os candidatos estão com 0 votos:")
     cursor.execute("select count(v.id_voto) votos, c.id_candidato, c.numero, c.nome_candidato, c.partido from candidatos c left join votos v on v.id_candidato = c.id_candidato group by c.id_candidato, c.numero, c.nome_candidato, c.partido")
     
@@ -166,8 +358,16 @@ def lista_candidatos():
 
     print("\nZerézima concluída.")
 
-# busca o candidato selecionado para votação
 def retorna_candidato(numero):
+    """
+    Busca um candidato pelo número conforme RF002.01.06.05.
+    
+    Args:
+        numero (int/str): Número do candidato
+    
+    Returns:
+        tuple: Tupla com dados do candidato ou None se não encontrado
+    """
     try:
         cursor.execute("select c.id_candidato, c.nome_candidato, c.numero, c.partido from candidatos c where c.numero =%s", (numero,))
 
@@ -182,12 +382,18 @@ def retorna_candidato(numero):
     except Exception as e:
         print("Erro ao buscar candidato:", e)
         return None
-    
 def atualiza_eleitor(titulo, cpf_4, chave):
     """
-        Atualiza o campo ja_votou para 1
+    Atualiza o status do eleitor para "Já votou" conforme RF002.01.06.08.
+    
+    Args:
+        titulo (str): Título de eleitor
+        cpf_4 (str): Primeiros 4 dígitos do CPF
+        chave (str): Chave de acesso do eleitor
+    
+    Returns:
+        bool: True se atualização foi bem-sucedida, False caso contrário
     """
-
     try:
         sql = "UPDATE eleitores SET ja_votou = 1 WHERE titulo_eleitor=%s AND left(cpf,4)=%s AND senha=%s"
         cursor.execute(sql, (titulo, cpf_4, chave))
@@ -199,20 +405,33 @@ def atualiza_eleitor(titulo, cpf_4, chave):
     
 def limpa_javotou():
     """
-        Limpa o campo de todos os eleitores que estão como já votou
+    Limpa o status "Já votou" de todos os eleitores após encerramento da votação.
+    
+    Args:
+        None
+    
+    Returns:
+        bool: True se limpeza foi bem-sucedida, False caso contrário
     """
-
     try:
         sql = "UPDATE eleitores SET ja_votou = 0"
         cursor.execute(sql)
         conexao.commit()
-
         return True
     except Exception as e:
         print("Erro ao limpar ja votou dos eleitores:", e)
         return False
     
 def urna_aberta():
+    """
+    Verifica se a urna está aberta conforme RF002.01.
+    
+    Args:
+        None
+    
+    Returns:
+        bool: True se urna está aberta, False caso contrário
+    """
     cursor.execute("SELECT aberta FROM urna WHERE id = 1")
     resultado = cursor.fetchone()
 
@@ -222,20 +441,34 @@ def urna_aberta():
     return resultado[0] == 1
 
 def abrir_urna():
+    """
+    Abre a urna e registra data/hora de abertura conforme RF002.01.01.
+    
+    Args:
+        None
+    
+    Returns:
+        None
+    """
     sql = "UPDATE urna SET aberta = 1, data_abertura = %s, data_fechamento = NULL WHERE id = 1"
-
     cursor.execute(sql, (datetime.now(),))
     conexao.commit()
 
 def fechar_urna():
+    """
+    Fecha a urna e registra data/hora de fechamento conforme RF002.01.07.06.
+    
+    Args:
+        None
+    
+    Returns:
+        bool: True se fechamento foi bem-sucedido, False caso contrário
+    """
     try:
         sql = "UPDATE urna SET aberta = 0, data_fechamento = %s WHERE id = 1"
-
         cursor.execute(sql, (datetime.now(),))
         conexao.commit()
-
         limpa_javotou()
-
         return True
     except Exception as e:
         return False
