@@ -124,6 +124,21 @@ def menu_votacao_iniciada():
                     break
                 else:
                     print("Erro ao encerrar votação.")
+
+def boletim_urna():
+    print("Boletim de Urna")
+
+def declaracao_vencedor():
+    print("Declaração de Vencedor")
+
+def estatistica_comparecimento(): 
+    print("Estatística de Comparecimento")
+
+def votos_por_partido():
+    print("Votos por Partido")
+
+def validacao_integridade(): 
+    print("Validação de Integridade")
                 
 opcao = 0 
 while opcao != 3: 
@@ -861,6 +876,49 @@ while opcao != 3:
                 elif opcaoVotacao == 2:
                     print("Entrou em Votacao -> Resultados\n")
                     util.salvar_log("VOTACAO - Resultados")
+
+                    opcaoResultados = 1
+
+                    while opcaoResultados != 0:
+                        print("\nRESULTADOS DA VOTAÇÃO")
+                        print("1 - Boletim de Urna")
+                        print("2 - Declaração de Vencedor")
+                        print("3 - Estatística de Comparecimento")
+                        print("4 - Votos por Partido")
+                        print("5 - Validação de Integridade")
+                        print("0 - Voltar")
+
+                        opcaoResultados = input("Selecione uma opção: ")
+
+                        if opcaoResultados.isdigit(): 
+                            opcaoResultados = int(opcaoResultados)
+                        else: 
+                            print("Digite apenas numeros")
+                            opcaoResultados = 1
+
+                        if opcaoResultados == 1: 
+                            boletim_urna()
+
+                        elif opcaoResultados == 2: 
+                            declaracao_vencedor()
+
+                        elif opcaoResultados == 3: 
+                             estatistica_comparecimento()
+
+                        elif opcaoResultados == 4: 
+                            votos_por_partido()
+
+                        elif opcaoResultados == 5: 
+                            validacao_integridade()
+
+                        elif opcaoResultados == 0: 
+                            print("Voltando ao menu de votação")
+
+                        else: 
+                            print("Opção inválida")
+
+
+                        
                 
                 # ---------------------------------------------------------
                 # AUDITORIA DA VOTACAO (RF002.02)
