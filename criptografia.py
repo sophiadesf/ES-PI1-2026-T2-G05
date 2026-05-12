@@ -1,28 +1,65 @@
 import numpy as np
 
-def texto_para_vetor(texto):
-    # Converte letras para números (A=0, B=1, ...)
-    texto = texto.upper().replace(" ", "")
-    return [ord(char) - ord('A') for char in texto]
+# Cifra de Hill - Implementação em Python 
+#numpy é uma biblioteca poderosa para manipulação de matrizes, 
+# o que é necessário para a Cifra de Hill, 
+# que se baseia em operações matriciais para 
+# encriptar e decriptar mensagens.
 
-def vetor_para_texto(vetor):
-    # Converte números de volta para letras
-    return "".join([chr(int(num) + ord('A')) for num in vetor])
+def is_invertible(matrix):
+    # Matri"X" e não matri"Z" porque está em inglês, 
+    # e é mais comum usar "matri"x" para se referir a 
+    # matrizes em geral.
 
-# 1. Configuração da Chave (Matriz Inversível)
-# Importante: A matriz deve ser inversível em módulo 26
-chave = np.array([[3, 3], [2, 5]])
+    """Verifica se a matriz é válida para a Cifra de Hill."""
+    if matrix.shape[0] != matrix.shape[1]:
+        return False
+    
+    det = int(np.round(np.linalg.det(matrix))) 
+    # Arredonda para evitar erros
+    
+    # Para ser funcional na decriptação: det != 0 
+    # Não pode ser divisível por 2 ou 13 (2x13=26)
 
-# 2. O Texto Original (deve ter tamanho par para uma matriz 2x2)
-mensagem = "HELP"
-vetor_msg = texto_para_vetor(mensagem)
-# Reshape para matriz: cada linha é um par de letras
-matriz_msg = np.array(vetor_msg).reshape(-1, 2)
+    return det != 0 and det % 2 != 0 and det % 13 != 0
 
-# 3. Criptografia
-# Multiplicação de matrizes: (Mensagem * Chave) mod 26
-resultado_cripto = np.dot(matriz_msg, chave) % 26
-msg_final = vetor_para_texto(resultado_cripto.flatten())
+def generate_safe_key(size):
+    """Gera uma matriz aleatória que garantidamente funciona."""
+    while True:
+        key = np.random.randint(1, 10, (size, size))
+        if is_invertible(key):
+            return key
 
-print(f"Mensagem Original: {mensagem}")
-print(f"Mensagem Criptografada: {msg_final}")
+def encrypt(plaintext, key):
+    """Encripta o texto usando a cifra de Hill."""
+    plaintext = plaintext.upper().replace(" ", "")
+     # Remove espaços
+
+    numbers = [ord(char) - ord('A') for char in plaintext if char.isalpha()]
+    
+    while len(numbers) % key.shape[0] != 0:
+        numbers.append(0) 
+        # Adiciona 'A' como preenchimento
+    
+    ciphertext = []
+    for i in range(0, len(numbers), key.shape[0]):
+        block = np.array(numbers[i:i+key.shape[0]])
+        encrypted_block = (np.dot(key, block) % 26).astype(int)
+        ciphertext.extend(encrypted_block)
+    
+    return ''.join(chr(num + ord('A')) for num in ciphertext)
+
+
+
+
+
+
+
+# --- EXEMPLO DE USO ---
+#tamanho_da_chave = 2 # Matriz 2x2
+#minha_chave = generate_safe_key(tamanho_da_chave)
+#texto = "HELLO"
+#texto_encriptado = encrypt(texto, minha_chave)
+#print(f"Chave Gerada:\n{minha_chave}")
+#print(f"Texto Original: {texto}")
+#print(f"Texto Criptografado: {texto_encriptado}")
