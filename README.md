@@ -17,8 +17,7 @@
 - ✅​ Listagem de Votantes
 - ✅​ Apuração de Resultados
 - ​❌​ Criptografia
-- ❌​ Descriptografia
-- ❌​ Voto Nulo
+- ​✅ Voto Nulo
 - ❌​ Limpar tela
 - ❌​ Resultados dos votos
 - ✅​ Menus e submenus
