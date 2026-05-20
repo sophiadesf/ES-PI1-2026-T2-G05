@@ -11,11 +11,14 @@
 # Funcionalidades Principais
 - [X] Cadastro de Candidatos
 - [X] Cadastrar/Editar/Listar/Deletar Eleitores (Usuários)
-- [ ] Realização de Voto
-- [ ] Controle de Voto Único
+- [X] Realização de Voto
+- [X] Controle de Voto Único
 - [ ] Listagem de Votantes
-- [ ] Apuração de Resultados
-- [ ] Resultados
+- [X] Apuração de Resultados
+- [X] Criptografia
+- [ ] Voto Nulo
+- [ ] Limpar tela
+- [X] Resultados
 
 # Tecnologias Utilizadas
 - MySQL
