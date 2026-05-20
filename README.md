@@ -1,6 +1,7 @@
 # ProjetoIntegrador
 
-# Integrantes do Grupo
+# Integrantes do Grupo ​👩​💻​
+
 | ----- Nome ------ |
 | Anne Vieira       |
 | Cecília Rufatto   |
@@ -9,31 +10,31 @@
 | Sophia Fabri      |
 
 # Funcionalidades Principais
-- [X] Cadastro de Candidatos
-- [X] Cadastrar/Editar/Listar/Deletar Eleitores (Usuários)
-- [X] Realização de Voto
-- [X] Controle de Voto Único
-- [X] Listagem de Votantes
-- [X] Apuração de Resultados
-- [] Criptografia
-- [] Descriptografia
-- [ ] Voto Nulo
-- [ ] Limpar tela
-- [] Resultados dos votos
-- [X] Menus e submenus
-- [X] Auditoria
-- [X] Gestão de candidatos
-- [X] Validação do título
-- [X] Mapa de navegação
-- [X] Encerrar votação
-- [X] Chave de acesso
-- [X] Abertura de votação
-- [] Boletim urna
-- [] Declaração de vencedor
-- [] Votos por partido
-- [] Estatísca de comparecimento
-- [] Validação de integridade
+- ✅​ Cadastro de Candidatos
+- ✅​ Cadastrar/Editar/Listar/Deletar Eleitores (Usuários)
+- ✅​ Realização de Voto
+- ✅​ Controle de Voto Único
+- ✅​ Listagem de Votantes
+- ✅​ Apuração de Resultados
+- ​❌​ Criptografia
+- ❌​ Descriptografia
+- ❌​ Voto Nulo
+- ❌​ Limpar tela
+- ❌​ Resultados dos votos
+- ✅​ Menus e submenus
+- ✅​ Auditoria
+- ✅​ Gestão de candidatos
+- ✅​ Validação do título
+- ✅​ Mapa de navegação
+- ✅​ Encerrar votação
+- ✅​ Chave de acesso
+- ✅​ Abertura de votação
+- ❌​ Boletim urna
+- ❌​ Declaração de vencedor
+- ❌​ Votos por partido
+- ❌​ Estatísca de comparecimento
+- ❌​ Validação de integridade
 
-# Tecnologias Utilizadas
+# Tecnologias Utilizadas 💻​
 - MySQL
 - Python
