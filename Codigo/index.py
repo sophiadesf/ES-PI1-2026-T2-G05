@@ -1208,7 +1208,6 @@ while opcao != 3:
     # SAIR DO SISTEMA
     # =================================================================
     elif opcao == 3:
-        print("\n" * 100)
         util.limpar_log()
         print("Saindo do programa\n")    
     # Opcao invalida no menu principal
