@@ -140,27 +140,30 @@ def boletim_urna():
     e ao final declara o vencedor da eleição.
     """
     # Imprime cabeçalho formatado do boletim de urna
-    print("\n" + "="*70)
     print("BOLETIM DE URNA - RESULTADO DA VOTAÇÃO")
-    print("="*70)
     
     # Chama função do módulo consultas para obter todos os candidatos com seus votos
     resultados = consultas.obter_resultados_por_candidato()
     
     # Verifica se há resultados; se não houver votos, exibe mensagem e sai da função
-    if not resultados:
-        print("Nenhum voto registrado ainda.\n")
-        return
+    if len(resultados) == 0: 
+        print("Nenhum voto registrado ainda.")
+        return 
     
-    # Calcula o total de votos somando a quantidade de votos (5º elemento) de cada candidato
-    total_votos = sum(resultado[4] for resultado in resultados)
+    # Calcula o total de votos somando pela lista de candidatos 
+    total_votos = 0
+    for r in resultados:
+        total_votos = total_votos + r[4] 
     
     # Exibe o total de votos registrados
-    print(f"\nTotal de votos consolidados: {total_votos}\n")
+    print("Total de votos: ", total_votos)
     
-    # Imprime cabeçalho da tabela com colunas: Nº, Nome, Partido e Votos
-    print(f"{'Nº':<5} {'Nome':<40} {'Partido':<15} {'Votos':<8}")
-    print("-"*70)
+    # Imprime sobre cada candidato e exibe seus dados 
+    for r in resultados: 
+        print("Candidato: " , r[2])
+        print("Número: " , r[1])
+        print("Partido: " , r[3])
+        print("Votos: " , r[4])
     
     # Itera sobre cada resultado de candidato para exibir seus dados em ordem alfabética
     for resultado in resultados:
@@ -205,29 +208,25 @@ def declaracao_vencedor():
     Exibe a declaração do vencedor da votação.
     Nota: Esta informação também é exibida ao final do Boletim de Urna.
     """
-    # Imprime cabeçalho formatado da declaração de vencedor
-    print("\n" + "="*70)
-    print("DECLARAÇÃO DE VENCEDOR")
-    print("="*70)
+     # Imprime cabeçalho formatado da declaração de vencedor
+    print("Declaração do Vencedor")
     
     # Chama função do módulo consultas para obter o candidato com maior número de votos
     vencedor = consultas.obter_vencedor()
     
     # Verifica se há algum vencedor (se não há votos, retorna None)
-    if not vencedor:
-        print("\nNenhum voto registrado ainda.\n")
-        return
+    if vencedor is None: 
+        print("Nenhum voto foi registrado ainda.")
+        return 
     
     # Desempacota os dados do vencedor: número, nome, partido e quantidade de votos
     numero, nome, partido, votos = vencedor
     
-    # Exibe as informações do candidato vencedor com formatação clara
-    print(f"\nCANDIDATO VENCEDOR:")
-    print(f"Nome: {nome}")
-    print(f"Número: {numero}")
-    print(f"Partido: {partido}")
-    print(f"Total de votos obtidos: {votos}")
-    print("\n" + "="*70 + "\n")
+    # Exibe as informações do candidato vencedor 
+    print("Vencedor: " , vencedor[1])
+    print("Numero: " , vencedor[0])
+    print("Partido: " , vencedor[2])
+    print("Votos: " , vencedor[3]) 
     
     # Registra esta operação nos logs do sistema para auditoria
     util.salvar_log("RESULTADO - Declaração de Vencedor consultada")
@@ -278,38 +277,31 @@ def votos_por_partido():
     Mostra a somatória de votos recebidos por cada legenda partidária.
     """
     # Imprime cabeçalho formatado da análise de votos por partido
-    print("\n" + "="*70)
-    print("VOTOS POR PARTIDO")
-    print("="*70)
+    print("Votos por Partido")
     
     # Chama função do módulo consultas para obter votos agrupados por partido
-    votos_partidos = consultas.obter_votos_por_partido()
+    partidos = consultas.obter_votos_por_partido()
     
-    # Verifica se há dados de partidos; se não há votos, exibe mensagem e sai
-    if not votos_partidos:
-        print("\nNenhum voto registrado ainda.\n")
-        return
+    # Verifica se há dados de partidos; se não há votos, exibe mensagem e sai da função 
+    if len(partidos) == 0: 
+        print("Nenhum voto foi registrado ainda.")
+        return 
     
-    # Calcula o total de votos somando a quantidade de votos (2º elemento) de cada partido
-    total_votos = sum(partido[1] for partido in votos_partidos)
     
+    # Calcula o total de votos somando a lista de partidos
+    total_votos = 0 
+    for p in partidos: 
+        total_votos = total_votos + p[1]
+    
+
     # Exibe o total de votos registrados
-    print(f"\nTotal de votos consolidados: {total_votos}\n")
+    print("Total de Votos: " , total_votos)
     
-    # Imprime cabeçalho da tabela com colunas: Partido e Somatória de Votos
-    print(f"{'Partido':<40} {'Somatória de Votos':<20}")
-    print("-"*70)
-    
-    # Itera sobre cada partido para exibir sua contagem de votos
-    for partido, votos in votos_partidos:
-        # Imprime a linha da tabela com formatação adequada (alinhamento e espaçamento)
-        print(f"{partido:<40} {votos:<20}")
-    
-    # Imprime linha de separação e total de votos na rodapé
-    print("-"*70)
-    print(f"{'TOTAL':<40} {total_votos:<20}")
-    print("="*70 + "\n")
-    
+    # Imprime sobre cada partido para exibir sua quantidade de votos; p[0]= nome do partido , p[1]= quantidade de votos
+    for p in partidos: 
+        print("Partido: ", p[0])
+        print("Votos: ", p[1]) 
+   
     # Registra esta operação nos logs do sistema para auditoria
     util.salvar_log("RESULTADO - Votos por Partido consultados")
 
