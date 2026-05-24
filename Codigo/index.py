@@ -376,6 +376,7 @@ def validacao_integridade():
                 
 opcao = 0 
 while opcao != 3: 
+    print("\n" * 100)
     print("----------------------------------")
     print("1 - Gerenciamento")
     print("2 - Votacao")
@@ -500,6 +501,7 @@ while opcao != 3:
 
                     # Cadastra na tabela de eleitores
                     consultas.inserir_eleitores(titulo, seguranca.criptografar(cpf), nome, seguranca.criptografar(chave_acesso), None, mesario)
+                    consultas.confirmar_limpar()
                     util.salvar_log("SUCESSO - Eleitor cadastrado: " + nome)
                     
                     # Exibir confirmacao e chave de acesso
@@ -1093,6 +1095,7 @@ while opcao != 3:
                     print("\nExecutando a Zerézima...\n")
                     consultas.limpa_votos()
                     consultas.abrir_urna()
+                    consultas.confirmar_limpar()
                     util.registrar_log_abertura()
                     menu_votacao_iniciada()
                     print("----------------------------------\n")
@@ -1205,6 +1208,7 @@ while opcao != 3:
     # SAIR DO SISTEMA
     # =================================================================
     elif opcao == 3:
+        print("\n" * 100)
         util.limpar_log()
         print("Saindo do programa\n")    
     # Opcao invalida no menu principal
