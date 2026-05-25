@@ -11,7 +11,7 @@ CREATE TABLE candidatos (
 CREATE TABLE eleitores (
     id_eleitor INT AUTO_INCREMENT PRIMARY KEY,
     titulo_eleitor VARCHAR(12) UNIQUE NOT NULL,
-    cpf VARCHAR(11) UNIQUE NOT NULL,
+    cpf VARCHAR(255) UNIQUE NOT NULL,
     -- UNIQUE impede CPFs repetidos
     nome_completo VARCHAR(100) NOT NULL,
     -- UNIQUE impede logins repetidos
@@ -26,12 +26,13 @@ CREATE TABLE votos (
     id_voto INT AUTO_INCREMENT PRIMARY KEY,
     id_candidato INT,
     FOREIGN KEY (id_candidato) REFERENCES candidatos(id_candidato),
-    data_hora datetime, 
-)
+    data_hora datetime,
+    protocolo varchar(255)
+);
 
 CREATE TABLE urna (
     id INT PRIMARY KEY AUTO_INCREMENT,
-    aberta TINYINT(1) DEFAULT 0,
+    aberta int DEFAULT 0,
     data_abertura DATETIME,
     data_fechamento DATETIME
 );

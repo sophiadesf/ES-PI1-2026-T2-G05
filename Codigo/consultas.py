@@ -1,3 +1,4 @@
+print(1)
 import mysql.connector
 from datetime import datetime
 import util as util
@@ -6,16 +7,17 @@ import seguranca as seguranca
 Módulo de conexão e consultas com banco de dados MySQL
 Responsável por todas as operações CRUD e autenticação
 """
-
+print(2)
 conexao = mysql.connector.connect(
-    host =  "localhost",
+    host = "127.0.0.1",
     user = "root",
     password = "puc1234",
     database = "sistema_eleicao"
 )
+print(3)
 
 cursor = conexao.cursor()
-
+print(4)
 def confirmar_limpar():
     conexao.commit()
     print("\n" * 100) 
@@ -234,7 +236,7 @@ def remover_eleitor(cpf):
     Returns:
         None
     """
-    cursor.execute("DELETE FROM eleitores WHERE cpf = %s", (seguranca.criptografar(cpf),))
+    cursor.execute("DELETE FROM eleitores WHERE cpf = %s", (cpf,))
     conexao.commit()
 
 def verificar_cpf_existe(cpf):
@@ -674,8 +676,8 @@ def validacao_integridade_votos():
         total_votos = cursor.fetchone()[0]
 
         # Executa query 3: total de eleitores 
-        cursor.execute(sql_total_eleitores)
-        total_eleitores = cursor.fetchone()[0]
+        cursor.execute(sql_eleitores_votaram)
+        eleitores_ja_votou = cursor.fetchone()[0]
 
         # Calcula eleitores que ainda não votaram
         eleitores_nao_votaram = total_eleitores - eleitores_ja_votou

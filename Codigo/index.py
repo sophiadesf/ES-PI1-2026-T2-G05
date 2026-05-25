@@ -519,7 +519,6 @@ while opcao != 3:
             # ---------------------------------------------------------
             elif opcaoGerenciamento == 2:
                 print("=== EDITAR ELEITOR ===\n")
-                
                 # Solicitar CPF para busca
                 cpf_busca = input("Digite o CPF do eleitor a editar: ").strip()
                 cpf_busca = ''.join(filter(str.isdigit, cpf_busca))
@@ -529,6 +528,7 @@ while opcao != 3:
                     print("\nErro: CPF deve ter 11 digitos!\n")
                     continue
                 
+                cpf_busca = seguranca.criptografar(cpf_busca)
                 # Variaveis para armazenar resultado da busca
                 eleitor_encontrado = None
                 eleitor_mesario = "Não"
@@ -588,7 +588,7 @@ while opcao != 3:
                     try:
                         consultas.cursor.execute(
                             "UPDATE eleitores SET nome_completo = %s WHERE cpf = %s",
-                            (novo_nome, cpf_busca)
+                            (novo_nome, seguranca.criptografar(cpf_busca))
                         )
                         
                         # Confirmar transacao
@@ -619,15 +619,14 @@ while opcao != 3:
                 # Solicitar CPF para busca
                 cpf_busca = input("Digite o CPF do eleitor a remover: ").strip()
                 cpf_busca = ''.join(filter(str.isdigit, cpf_busca))
-                
+            
                 # Validar formato do CPF
                 if len(cpf_busca) != 11:
                     print("\nErro: CPF deve ter 11 digitos!\n")
                     continue
-                
+                cpf_busca = seguranca.criptografar(cpf_busca)
                 # Variaveis para armazenar resultado da busca
-                eleitor_encontrado = None
-                
+                eleitor_encontrado = None   
                 try:
                     # Buscar na tabela de eelitores
                     consultas.cursor.execute(
@@ -702,8 +701,8 @@ while opcao != 3:
                             print(f"Titulo de Eleitor: {res[1]}")
                             print(f"CPF: {res[2]}")
                             print(f"Nome: {res[3]}")
-                            print(f"Ja votou: {"Não" if res[4] == None else "Sim"}")
-                            print(f"Mesario: {"Sim" if res[5] == 1 else "Não"}")
+                            print(f"Ja votou: {'Não' if res[4] == None else 'Sim'}")
+                            print(f"Mesario: {'Sim' if res[5] == 1 else 'Não'}")
                             print("="*40 + "\n")
 
                 except Exception as e:
@@ -725,8 +724,8 @@ while opcao != 3:
                         print(f"Titulo de Eleitor: {res[1]}")
                         print(f"CPF: {res[2]}")
                         print(f"Nome: {res[3]}")
-                        print(f"Ja votou: {"Não" if res[4] == None else "Sim"}")
-                        print(f"Mesario: {"Sim" if res[5] == 1 else "Não"}")
+                        print(f"Ja votou: {'Não' if res[4] == None else 'Sim'}")
+                        print(f"Mesario: {'Sim' if res[5] == 1 else 'Não'}")
                         print("="*40 + "\n")
             
             # ---------------------------------------------------------
@@ -1129,8 +1128,6 @@ while opcao != 3:
                             util.salvar_log("VOTACAO - Resultado - ERRO: Selecionado opção inválida do menu")
                             print("Opção inválida")
 
-
-                        
                 
                 # ---------------------------------------------------------
                 # AUDITORIA DA VOTACAO (RF002.02)
