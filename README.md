@@ -10,6 +10,7 @@
 | Sophia Fabri      |
 
 # Funcionalidades Principais
+
 - ✅​ Cadastro de Candidatos
 - ✅​ Cadastrar/Editar/Listar/Deletar Eleitores (Usuários)
 - ✅​ Realização de Voto
@@ -18,8 +19,8 @@
 - ✅​ Apuração de Resultados
 - ​✅​ Criptografia
 - ​✅ Voto Nulo
-- ❌​ Limpar tela
-- ❌​ Resultados dos votos
+- ✅​ Limpar tela
+- ✅​ Resultados dos votos
 - ✅​ Menus e submenus
 - ✅​ Auditoria
 - ✅​ Gestão de candidatos
@@ -28,10 +29,10 @@
 - ✅​ Encerrar votação
 - ✅​ Chave de acesso
 - ✅​ Abertura de votação
-- ❌​ Boletim urna
-- ❌​ Declaração de vencedor
-- ❌​ Votos por partido
-- ❌​ Estatísca de comparecimento
+- ✅​ Boletim urna
+- ✅​ Declaração de vencedor
+- ✅​ Votos por partido
+- ✅ Estatísca de comparecimento
 - ❌​ Validação de integridade
 
 # Tecnologias Utilizadas 💻​
