@@ -441,6 +441,7 @@ def urna_aberta():
     """
     cursor.execute("SELECT aberta FROM urna WHERE id = 1")
     resultado = cursor.fetchone()
+    print("DEBUG:", resultado)
 
     if resultado is None:
         return False
@@ -457,6 +458,7 @@ def abrir_urna():
     Returns:
         None
     """
+    limpa_javotou()
     sql = "UPDATE urna SET aberta = 1, data_abertura = %s, data_fechamento = NULL WHERE id = 1"
     cursor.execute(sql, (datetime.now(),))
     conexao.commit()
@@ -475,7 +477,6 @@ def fechar_urna():
         sql = "UPDATE urna SET aberta = 0, data_fechamento = %s WHERE id = 1"
         cursor.execute(sql, (datetime.now(),))
         conexao.commit()
-        limpa_javotou()
         return True
     except Exception as e:
         return False
@@ -587,11 +588,11 @@ def obter_estatistica_comparecimento():
         dict: Dicionário com total_eleitores, eleitores_votaram, nao_votaram, percentual
     """
     try:
-        # Query 1: Conta total de eleitores (excluindo mesários que é mesario = 0)
-        sql_total = "SELECT COUNT(*) FROM eleitores WHERE mesario = 0"
+        # Query 1: Conta total de eleitores
+        sql_total = "SELECT COUNT(*) FROM eleitores"
         
         # Query 2: Conta quantos eleitores já votaram (ja_votou = 1)
-        sql_votaram = "SELECT COUNT(*) FROM eleitores WHERE mesario = 0 AND ja_votou = 1"
+        sql_votaram = "SELECT COUNT(*) FROM eleitores WHERE ja_votou = 1"
         
         # Executa primeira query e obtém o total de eleitores
         cursor.execute(sql_total)
@@ -670,7 +671,9 @@ def validacao_integridade_votos():
         
         # Query 3: Conta total de eleitores (excluindo mesários)
         sql_total_eleitores = "SELECT COUNT(*) FROM eleitores WHERE mesario = 0"
-        
+        cursor.execute(sql_total_eleitores)
+        total_eleitores = cursor.fetchone()[0]
+
         # Executa query 1: total de votos na urna
         cursor.execute(sql_total_votos)
         total_votos = cursor.fetchone()[0]
@@ -702,3 +705,11 @@ def validacao_integridade_votos():
         print(f"Erro ao validar integridade: {str(e)}")
         return {}
         
+def obter_votos_nulos():
+    try:
+        sql = "SELECT COUNT(*) FROM votos WHERE id_candidato IS NULL"
+        cursor.execute(sql)
+        return cursor.fetchone()[0]
+    except Exception as e:
+        print("Erro ao obter votos nulos:", e)
+        return 0

@@ -51,7 +51,7 @@ def menu_votacao_iniciada():
             confirma_candidato = False 
             while not confirma_candidato:
                 numero_candidato  = input("Digite o número do candidato que deseja votar: ")
-                id_candidato = 0
+                id_candidato = None
                 numero = 0
 
                 resultado = consultas.retorna_candidato(numero_candidato)
@@ -130,7 +130,7 @@ def menu_votacao_iniciada():
                 if consultas.fechar_urna():
                     print("VOTAÇÃO ENCERRADA COM SUCESSO!")
                     util.registrar_log_encerramento()
-                    break
+                    return
                 else:
                     print("Erro ao encerrar votação.")
 
@@ -177,7 +177,9 @@ def boletim_urna():
     print("-"*70)
     print(f"{'TOTAL DE VOTOS':<5} {'':<40} {'':<15} {total_votos:<8}")
     print("="*70)
-    
+    votos_nulos = consultas.obter_votos_nulos()
+    print("Votos nulos:", votos_nulos)
+    print("="*70)
     # Chama função do módulo consultas para obter o candidato com maior número de votos
     vencedor = consultas.obter_vencedor()
     
@@ -317,7 +319,7 @@ def validacao_integridade():
     print("="*70)
     
     # Chama função do módulo consultas para obter dados de validação de integridade
-    validacao = consultas.validar_integridade_votos()
+    validacao = consultas.validacao_integridade_votos()
     
     # Verifica se os dados foram carregados corretamente
     if not validacao:
