@@ -19,7 +19,7 @@
 - ✅​ Apuração de Resultados
 - ​✅​ Criptografia
 - ​✅ Voto Nulo
-- ✅​ Limpar tela
+- ❌​​ Limpar tela
 - ✅​ Resultados dos votos
 - ✅​ Menus e submenus
 - ✅​ Auditoria
