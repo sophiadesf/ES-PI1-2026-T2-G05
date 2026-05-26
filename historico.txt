@@ -2,9 +2,74 @@
 [2026-05-20 08:41:11] ERRO - Tentativa de cadastro com CPF duplicado
 [2026-05-20 08:42:31] ERRO - Falha ao cadastrar eleitor: cannot access local variable 'texto_limpo' where it is not associated with a value
 [2026-05-20 09:11:19] Opcao de votacao selecionado
-[2026-05-21 09:45:12] ERRO - Falha ao cadastrar eleitor: 1406 (22001): Data too long for column 'cpf' at row 1
-[2026-05-21 09:46:36] Gerenciamento -> ERRO: Opcao invalida do menu
-[2026-05-21 09:46:36] Gerenciamento -> ERRO: Opcao invalida do menu
-[2026-05-21 09:46:37] Gerenciamento -> ERRO: Opcao invalida do menu
-[2026-05-21 09:46:38] Gerenciamento -> ERRO: Opcao invalida do menu
-[2026-05-21 09:47:23] ERRO - Falha ao cadastrar eleitor: 1406 (22001): Data too long for column 'cpf' at row 1
+[2026-05-25 13:07:21] ERRO - Falha ao cadastrar eleitor: 1406 (22001): Data too long for column 'cpf' at row 1
+[2026-05-25 13:08:55] Gerenciamento -> ERRO: Opcao invalida do menu
+[2026-05-25 13:08:55] Gerenciamento -> ERRO: Opcao invalida do menu
+[2026-05-25 13:09:01] ERRO - Tentativa de cadastro sem nome e sobrenome
+[2026-05-25 13:09:23] ERRO - Falha ao cadastrar eleitor: 1406 (22001): Data too long for column 'cpf' at row 1
+[2026-05-25 13:13:24] Gerenciamento -> ERRO: Opcao invalida do menu
+[2026-05-25 13:13:24] Gerenciamento -> ERRO: Opcao invalida do menu
+[2026-05-25 13:13:47] ERRO - Falha ao cadastrar eleitor: 1406 (22001): Data too long for column 'cpf' at row 1
+[2026-05-25 13:17:43] Gerenciamento -> ERRO: Opcao invalida do menu
+[2026-05-25 13:17:43] Gerenciamento -> ERRO: Opcao invalida do menu
+[2026-05-25 13:18:49] SUCESSO - Eleitor cadastrado: Sophia Lopes
+[2026-05-25 13:21:19] Gerenciamento -> ERRO: Opcao invalida do menu
+[2026-05-25 13:21:19] Gerenciamento -> ERRO: Opcao invalida do menu
+[2026-05-25 13:23:20] Gerenciamento -> ERRO: Opcao invalida do menu
+[2026-05-25 13:23:20] Gerenciamento -> ERRO: Opcao invalida do menu
+[2026-05-25 13:24:19] SUCESSO - Eleitor editado: 56620106846
+[2026-05-25 13:28:46] ERRO - Falha ao buscar eleitores: 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'HOYWDF'%' ORDER BY E.id_eleitor' at line 1
+[2026-05-25 13:30:44] SUCESSO - Eleitor removido: HOYWDFSEKKSM (Sophia Lopes)
+[2026-05-25 13:30:54] ERRO - Tentativa de cadastro com CPF duplicado
+[2026-05-25 13:33:08] ERRO - Eleitor nao encontrado para remocao: 
+[2026-05-25 13:33:59] SUCESSO - Eleitor removido: HOYWDFSEKKSM (Sophia Lopes)
+[2026-05-25 13:34:58] SUCESSO - Eleitor removido: HOYWDFSEKKSM (Sophia Lopes)
+[2026-05-25 13:35:29] SUCESSO - Eleitor cadastrado: Sophia Dalla
+[2026-05-25 13:35:41] Opcao de votacao selecionado
+[2026-05-25 13:39:31] Opcao de votacao selecionado
+[2026-05-25 13:40:03] ABERTURA: Votação iniciada com sucesso. Total de votos zerado.
+[2026-05-25 13:40:58] ENCERRAMENTO: Votação finalizada com sucesso.
+[2026-05-25 13:41:22] RESULTADO - Estatística de Comparecimento consultada
+[2026-05-25 13:43:26] Opcao de votacao selecionado
+[2026-05-25 13:43:56] ABERTURA: Votação iniciada com sucesso. Total de votos zerado.
+[2026-05-25 13:44:28] SUCESSO: Voto realizado com sucesso
+[2026-05-25 13:45:06] ALERTA: Tentativa de voto duplo
+[2026-05-25 13:45:27] Opcao de votacao selecionado
+[2026-05-25 13:45:53] ABERTURA: Votação iniciada com sucesso. Total de votos zerado.
+[2026-05-25 13:46:08] ALERTA: Tentativa de voto duplo
+[2026-05-25 18:42:04] ERRO - Titulo de eleitor invalido informado
+[2026-05-25 18:42:12] ERRO - Titulo de eleitor invalido informado
+[2026-05-25 18:42:41] SUCESSO - Eleitor cadastrado: Murilo Martins
+[2026-05-25 18:43:34] ERRO - Titulo de eleitor invalido informado
+[2026-05-25 18:43:48] SUCESSO - Eleitor cadastrado: Sophia Lopes
+[2026-05-25 18:44:41] SUCESSO - Eleitor cadastrado: Maria Eduarda
+[2026-05-25 18:45:35] Opcao de votacao selecionado
+[2026-05-25 18:46:25] ABERTURA: Votação iniciada com sucesso. Total de votos zerado.
+[2026-05-25 18:49:59] Opcao de votacao selecionado
+[2026-05-25 18:50:28] ABERTURA: Votação iniciada com sucesso. Total de votos zerado.
+[2026-05-25 18:51:18] SUCESSO: Voto realizado com sucesso
+[2026-05-25 18:52:00] Opcao de votacao selecionado
+[2026-05-25 18:52:45] SUCESSO: Voto realizado com sucesso
+[2026-05-25 18:53:45] ENCERRAMENTO: Votação finalizada com sucesso.
+[2026-05-25 18:53:45] VOTACAO - Urna ja aberta
+[2026-05-25 18:53:58] Opcao de votacao selecionado
+[2026-05-25 18:54:05] RESULTADO - Boletim de Urna consultado
+[2026-05-25 18:54:39] RESULTADO - Declaração de Vencedor consultada
+[2026-05-25 18:54:52] RESULTADO - Estatística de Comparecimento consultada
+[2026-05-25 18:55:09] RESULTADO - Votos por Partido consultados
+[2026-05-25 18:56:22] Opcao de votacao selecionado
+[2026-05-25 18:58:46] Opcao de votacao selecionado
+[2026-05-25 18:58:52] RESULTADO - Validação de Integridade consultada
+[2026-05-25 19:05:25] Opcao de votacao selecionado
+[2026-05-25 19:05:45] ABERTURA: Votação iniciada com sucesso. Total de votos zerado.
+[2026-05-25 19:06:08] SUCESSO: Voto realizado com sucesso
+[2026-05-25 19:06:48] Opcao de votacao selecionado
+[2026-05-25 19:07:20] SUCESSO: Voto realizado com sucesso
+[2026-05-25 19:07:51] ENCERRAMENTO: Votação finalizada com sucesso.
+[2026-05-25 19:07:51] VOTACAO - Urna ja aberta
+[2026-05-25 19:07:53] Opcao de votacao selecionado
+[2026-05-25 19:07:57] RESULTADO - Boletim de Urna consultado
+[2026-05-25 19:08:32] RESULTADO - Declaração de Vencedor consultada
+[2026-05-25 19:08:39] RESULTADO - Estatística de Comparecimento consultada
+[2026-05-25 19:13:30] RESULTADO - Boletim de Urna consultado
+[2026-05-25 19:14:54] RESULTADO - Votos por Partido consultados

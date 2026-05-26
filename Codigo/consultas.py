@@ -1,3 +1,4 @@
+print(1)
 import mysql.connector
 from datetime import datetime
 import util as util
@@ -6,15 +7,20 @@ import seguranca as seguranca
 Módulo de conexão e consultas com banco de dados MySQL
 Responsável por todas as operações CRUD e autenticação
 """
-
+print(2)
 conexao = mysql.connector.connect(
-    host =  "localhost",
+    host = "127.0.0.1",
     user = "root",
     password = "puc1234",
     database = "sistema_eleicao"
 )
+print(3)
 
 cursor = conexao.cursor()
+print(4)
+def confirmar_limpar():
+    conexao.commit()
+    print("\n" * 100) 
 
 def inserir_candidatos(numero, nome, partido):
     """
@@ -230,7 +236,7 @@ def remover_eleitor(cpf):
     Returns:
         None
     """
-    cursor.execute("DELETE FROM eleitores WHERE cpf = %s", (seguranca.criptografar(cpf),))
+    cursor.execute("DELETE FROM eleitores WHERE cpf = %s", (cpf,))
     conexao.commit()
 
 def verificar_cpf_existe(cpf):
@@ -435,6 +441,7 @@ def urna_aberta():
     """
     cursor.execute("SELECT aberta FROM urna WHERE id = 1")
     resultado = cursor.fetchone()
+    print("DEBUG:", resultado)
 
     if resultado is None:
         return False
@@ -451,6 +458,7 @@ def abrir_urna():
     Returns:
         None
     """
+    limpa_javotou()
     sql = "UPDATE urna SET aberta = 1, data_abertura = %s, data_fechamento = NULL WHERE id = 1"
     cursor.execute(sql, (datetime.now(),))
     conexao.commit()
@@ -469,7 +477,6 @@ def fechar_urna():
         sql = "UPDATE urna SET aberta = 0, data_fechamento = %s WHERE id = 1"
         cursor.execute(sql, (datetime.now(),))
         conexao.commit()
-        limpa_javotou()
         return True
     except Exception as e:
         return False
@@ -581,11 +588,11 @@ def obter_estatistica_comparecimento():
         dict: Dicionário com total_eleitores, eleitores_votaram, nao_votaram, percentual
     """
     try:
-        # Query 1: Conta total de eleitores (excluindo mesários que é mesario = 0)
-        sql_total = "SELECT COUNT(*) FROM eleitores WHERE mesario = 0"
+        # Query 1: Conta total de eleitores
+        sql_total = "SELECT COUNT(*) FROM eleitores"
         
         # Query 2: Conta quantos eleitores já votaram (ja_votou = 1)
-        sql_votaram = "SELECT COUNT(*) FROM eleitores WHERE mesario = 0 AND ja_votou = 1"
+        sql_votaram = "SELECT COUNT(*) FROM eleitores WHERE ja_votou = 1"
         
         # Executa primeira query e obtém o total de eleitores
         cursor.execute(sql_total)
@@ -645,14 +652,13 @@ def obter_votos_por_partido():
         print(f"Erro ao obter votos por partido: {str(e)}")
         return []
 
-def validar_integridade_votos():
+def validacao_integridade_votos():
     """
-    Valida integridade dos votos comparando o total de votos registrados
+    Valida integridade dos votos comparando o total de votos registrados 
     na urna com a quantidade de eleitores que possuem status "Já Votou".
-    
+
     Args:
         None
-    
     Returns:
         dict: Dicionário com informações de integridade e comparação
     """
@@ -665,38 +671,45 @@ def validar_integridade_votos():
         
         # Query 3: Conta total de eleitores (excluindo mesários)
         sql_total_eleitores = "SELECT COUNT(*) FROM eleitores WHERE mesario = 0"
-        
+        cursor.execute(sql_total_eleitores)
+        total_eleitores = cursor.fetchone()[0]
+
         # Executa query 1: total de votos na urna
         cursor.execute(sql_total_votos)
         total_votos = cursor.fetchone()[0]
-        
-        # Executa query 2: total de eleitores com "Já Votou"
+
+        # Executa query 3: total de eleitores 
         cursor.execute(sql_eleitores_votaram)
         eleitores_ja_votou = cursor.fetchone()[0]
-        
-        # Executa query 3: total de eleitores
-        cursor.execute(sql_total_eleitores)
-        total_eleitores = cursor.fetchone()[0]
-        
+
         # Calcula eleitores que ainda não votaram
         eleitores_nao_votaram = total_eleitores - eleitores_ja_votou
-        
-        # Verifica se a integridade está OK (votos = eleitores que votaram)
+
+        # Verifica se a integridade está OK (votos = eleitores que votaram) 
         integridade_ok = (total_votos == eleitores_ja_votou)
-        
-        # Calcula diferença para análise
+
+        # Calcula diferença para análise 
         diferenca = abs(total_votos - eleitores_ja_votou)
-        
-        # Retorna dicionário com todos os dados de comparação
+
+        # Retorna dicionário com todos os dados de comparação 
         return {
             'total_votos': total_votos,
             'eleitores_ja_votou': eleitores_ja_votou,
             'eleitores_nao_votaram': eleitores_nao_votaram,
             'total_eleitores': total_eleitores,
-            'diferenca': diferenca,
+            'diferenca': diferenca, 
             'integridade_ok': integridade_ok
         }
     except Exception as e:
-        # Se ocorrer erro na consulta, exibe mensagem e retorna dicionário vazio
+        # Se ocorrer erro na consulta, exibe mensgaem e retorna dicionário vazio 
         print(f"Erro ao validar integridade: {str(e)}")
         return {}
+        
+def obter_votos_nulos():
+    try:
+        sql = "SELECT COUNT(*) FROM votos WHERE id_candidato IS NULL"
+        cursor.execute(sql)
+        return cursor.fetchone()[0]
+    except Exception as e:
+        print("Erro ao obter votos nulos:", e)
+        return 0

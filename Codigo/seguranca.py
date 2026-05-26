@@ -2,12 +2,13 @@ import numpy as np
 import re
 #expressões regulares em inglês 
 
-# Matriz 2x2 fixa para garantir que o sistema sempre gere a mesma chave para o mesmo título
+# Matriz 2x2 fixa para garantir que o sistema sempre gere a MESMA chave para o MESMO título
 CHAVE_MESTRA = np.array([[3, 3], [2, 5]])
 
-def validar_cpf(cpf):
-    cpf = re.sub(r'\D', '', str(cpf))
-    return len(cpf) == 11
+# def validar_cpf(cpf):
+#     cpf = re.sub(r'\D', '', str(cpf))
+#     return len(cpf) == 11
+#     # Valida e ve se o cpf existe e tem o num certo (ex: se tiver 9, vai dar erro)
 
 def criptografar(texto):
     """Lógica da Cifra de Hill: Título -> Letras Criptografadas"""
@@ -16,7 +17,7 @@ def criptografar(texto):
     if len(texto_limpo) % 2 != 0:
         texto_limpo += "0"
     
-    # Converte números para letras
+    # Converte os números para as letras
     texto_limpo = "".join([chr(int(n) + ord('A')) for n in texto_limpo])
     
     # encriptação 

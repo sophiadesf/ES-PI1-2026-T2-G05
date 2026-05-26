@@ -51,7 +51,7 @@ def menu_votacao_iniciada():
             confirma_candidato = False 
             while not confirma_candidato:
                 numero_candidato  = input("Digite o número do candidato que deseja votar: ")
-                id_candidato = 0
+                id_candidato = None
                 numero = 0
 
                 resultado = consultas.retorna_candidato(numero_candidato)
@@ -80,6 +80,7 @@ def menu_votacao_iniciada():
                 confirma_candidato = True
 
             protocolo = consultas.inserir_voto(id_candidato,numero,titulo,cpf_4,chave)
+            consultas.confirmar_limpar()
             if protocolo:
                 print("\nVOTO CONFIRMADO!")
                 print("PROTOCOLO:", protocolo)
@@ -129,7 +130,7 @@ def menu_votacao_iniciada():
                 if consultas.fechar_urna():
                     print("VOTAÇÃO ENCERRADA COM SUCESSO!")
                     util.registrar_log_encerramento()
-                    break
+                    return
                 else:
                     print("Erro ao encerrar votação.")
 
@@ -139,27 +140,30 @@ def boletim_urna():
     e ao final declara o vencedor da eleição.
     """
     # Imprime cabeçalho formatado do boletim de urna
-    print("\n" + "="*70)
     print("BOLETIM DE URNA - RESULTADO DA VOTAÇÃO")
-    print("="*70)
     
     # Chama função do módulo consultas para obter todos os candidatos com seus votos
     resultados = consultas.obter_resultados_por_candidato()
     
     # Verifica se há resultados; se não houver votos, exibe mensagem e sai da função
-    if not resultados:
-        print("Nenhum voto registrado ainda.\n")
-        return
+    if len(resultados) == 0: 
+        print("Nenhum voto registrado ainda.")
+        return 
     
-    # Calcula o total de votos somando a quantidade de votos (5º elemento) de cada candidato
-    total_votos = sum(resultado[4] for resultado in resultados)
+    # Calcula o total de votos somando pela lista de candidatos 
+    total_votos = 0
+    for r in resultados:
+        total_votos = total_votos + r[4] 
     
     # Exibe o total de votos registrados
-    print(f"\nTotal de votos consolidados: {total_votos}\n")
+    print("Total de votos: ", total_votos)
     
-    # Imprime cabeçalho da tabela com colunas: Nº, Nome, Partido e Votos
-    print(f"{'Nº':<5} {'Nome':<40} {'Partido':<15} {'Votos':<8}")
-    print("-"*70)
+    # Imprime sobre cada candidato e exibe seus dados 
+    for r in resultados: 
+        print("Candidato: " , r[2])
+        print("Número: " , r[1])
+        print("Partido: " , r[3])
+        print("Votos: " , r[4])
     
     # Itera sobre cada resultado de candidato para exibir seus dados em ordem alfabética
     for resultado in resultados:
@@ -173,7 +177,9 @@ def boletim_urna():
     print("-"*70)
     print(f"{'TOTAL DE VOTOS':<5} {'':<40} {'':<15} {total_votos:<8}")
     print("="*70)
-    
+    votos_nulos = consultas.obter_votos_nulos()
+    print("Votos nulos:", votos_nulos)
+    print("="*70)
     # Chama função do módulo consultas para obter o candidato com maior número de votos
     vencedor = consultas.obter_vencedor()
     
@@ -204,29 +210,25 @@ def declaracao_vencedor():
     Exibe a declaração do vencedor da votação.
     Nota: Esta informação também é exibida ao final do Boletim de Urna.
     """
-    # Imprime cabeçalho formatado da declaração de vencedor
-    print("\n" + "="*70)
-    print("DECLARAÇÃO DE VENCEDOR")
-    print("="*70)
+     # Imprime cabeçalho formatado da declaração de vencedor
+    print("Declaração do Vencedor")
     
     # Chama função do módulo consultas para obter o candidato com maior número de votos
     vencedor = consultas.obter_vencedor()
     
     # Verifica se há algum vencedor (se não há votos, retorna None)
-    if not vencedor:
-        print("\nNenhum voto registrado ainda.\n")
-        return
+    if vencedor is None: 
+        print("Nenhum voto foi registrado ainda.")
+        return 
     
     # Desempacota os dados do vencedor: número, nome, partido e quantidade de votos
     numero, nome, partido, votos = vencedor
     
-    # Exibe as informações do candidato vencedor com formatação clara
-    print(f"\nCANDIDATO VENCEDOR:")
-    print(f"Nome: {nome}")
-    print(f"Número: {numero}")
-    print(f"Partido: {partido}")
-    print(f"Total de votos obtidos: {votos}")
-    print("\n" + "="*70 + "\n")
+    # Exibe as informações do candidato vencedor 
+    print("Vencedor: " , vencedor[1])
+    print("Numero: " , vencedor[0])
+    print("Partido: " , vencedor[2])
+    print("Votos: " , vencedor[3]) 
     
     # Registra esta operação nos logs do sistema para auditoria
     util.salvar_log("RESULTADO - Declaração de Vencedor consultada")
@@ -277,38 +279,31 @@ def votos_por_partido():
     Mostra a somatória de votos recebidos por cada legenda partidária.
     """
     # Imprime cabeçalho formatado da análise de votos por partido
-    print("\n" + "="*70)
-    print("VOTOS POR PARTIDO")
-    print("="*70)
+    print("Votos por Partido")
     
     # Chama função do módulo consultas para obter votos agrupados por partido
-    votos_partidos = consultas.obter_votos_por_partido()
+    partidos = consultas.obter_votos_por_partido()
     
-    # Verifica se há dados de partidos; se não há votos, exibe mensagem e sai
-    if not votos_partidos:
-        print("\nNenhum voto registrado ainda.\n")
-        return
+    # Verifica se há dados de partidos; se não há votos, exibe mensagem e sai da função 
+    if len(partidos) == 0: 
+        print("Nenhum voto foi registrado ainda.")
+        return 
     
-    # Calcula o total de votos somando a quantidade de votos (2º elemento) de cada partido
-    total_votos = sum(partido[1] for partido in votos_partidos)
     
+    # Calcula o total de votos somando a lista de partidos
+    total_votos = 0 
+    for p in partidos: 
+        total_votos = total_votos + p[1]
+    
+
     # Exibe o total de votos registrados
-    print(f"\nTotal de votos consolidados: {total_votos}\n")
+    print("Total de Votos: " , total_votos)
     
-    # Imprime cabeçalho da tabela com colunas: Partido e Somatória de Votos
-    print(f"{'Partido':<40} {'Somatória de Votos':<20}")
-    print("-"*70)
-    
-    # Itera sobre cada partido para exibir sua contagem de votos
-    for partido, votos in votos_partidos:
-        # Imprime a linha da tabela com formatação adequada (alinhamento e espaçamento)
-        print(f"{partido:<40} {votos:<20}")
-    
-    # Imprime linha de separação e total de votos na rodapé
-    print("-"*70)
-    print(f"{'TOTAL':<40} {total_votos:<20}")
-    print("="*70 + "\n")
-    
+    # Imprime sobre cada partido para exibir sua quantidade de votos; p[0]= nome do partido , p[1]= quantidade de votos
+    for p in partidos: 
+        print("Partido: ", p[0])
+        print("Votos: ", p[1]) 
+   
     # Registra esta operação nos logs do sistema para auditoria
     util.salvar_log("RESULTADO - Votos por Partido consultados")
 
@@ -324,7 +319,7 @@ def validacao_integridade():
     print("="*70)
     
     # Chama função do módulo consultas para obter dados de validação de integridade
-    validacao = consultas.validar_integridade_votos()
+    validacao = consultas.validacao_integridade_votos()
     
     # Verifica se os dados foram carregados corretamente
     if not validacao:
@@ -375,6 +370,7 @@ def validacao_integridade():
                 
 opcao = 0 
 while opcao != 3: 
+    print("\n" * 100)
     print("----------------------------------")
     print("1 - Gerenciamento")
     print("2 - Votacao")
@@ -499,6 +495,7 @@ while opcao != 3:
 
                     # Cadastra na tabela de eleitores
                     consultas.inserir_eleitores(titulo, seguranca.criptografar(cpf), nome, seguranca.criptografar(chave_acesso), None, mesario)
+                    consultas.confirmar_limpar()
                     util.salvar_log("SUCESSO - Eleitor cadastrado: " + nome)
                     
                     # Exibir confirmacao e chave de acesso
@@ -524,7 +521,6 @@ while opcao != 3:
             # ---------------------------------------------------------
             elif opcaoGerenciamento == 2:
                 print("=== EDITAR ELEITOR ===\n")
-                
                 # Solicitar CPF para busca
                 cpf_busca = input("Digite o CPF do eleitor a editar: ").strip()
                 cpf_busca = ''.join(filter(str.isdigit, cpf_busca))
@@ -534,6 +530,7 @@ while opcao != 3:
                     print("\nErro: CPF deve ter 11 digitos!\n")
                     continue
                 
+                cpf_busca = seguranca.criptografar(cpf_busca)
                 # Variaveis para armazenar resultado da busca
                 eleitor_encontrado = None
                 eleitor_mesario = "Não"
@@ -593,7 +590,7 @@ while opcao != 3:
                     try:
                         consultas.cursor.execute(
                             "UPDATE eleitores SET nome_completo = %s WHERE cpf = %s",
-                            (novo_nome, cpf_busca)
+                            (novo_nome, seguranca.criptografar(cpf_busca))
                         )
                         
                         # Confirmar transacao
@@ -624,15 +621,14 @@ while opcao != 3:
                 # Solicitar CPF para busca
                 cpf_busca = input("Digite o CPF do eleitor a remover: ").strip()
                 cpf_busca = ''.join(filter(str.isdigit, cpf_busca))
-                
+            
                 # Validar formato do CPF
                 if len(cpf_busca) != 11:
                     print("\nErro: CPF deve ter 11 digitos!\n")
                     continue
-                
+                cpf_busca = seguranca.criptografar(cpf_busca)
                 # Variaveis para armazenar resultado da busca
-                eleitor_encontrado = None
-                
+                eleitor_encontrado = None   
                 try:
                     # Buscar na tabela de eelitores
                     consultas.cursor.execute(
@@ -707,8 +703,8 @@ while opcao != 3:
                             print(f"Titulo de Eleitor: {res[1]}")
                             print(f"CPF: {res[2]}")
                             print(f"Nome: {res[3]}")
-                            print(f"Ja votou: {"Não" if res[4] == None else "Sim"}")
-                            print(f"Mesario: {"Sim" if res[5] == 1 else "Não"}")
+                            print(f"Ja votou: {'Não' if res[4] == None else 'Sim'}")
+                            print(f"Mesario: {'Sim' if res[5] == 1 else 'Não'}")
                             print("="*40 + "\n")
 
                 except Exception as e:
@@ -730,8 +726,8 @@ while opcao != 3:
                         print(f"Titulo de Eleitor: {res[1]}")
                         print(f"CPF: {res[2]}")
                         print(f"Nome: {res[3]}")
-                        print(f"Ja votou: {"Não" if res[4] == None else "Sim"}")
-                        print(f"Mesario: {"Sim" if res[5] == 1 else "Não"}")
+                        print(f"Ja votou: {'Não' if res[4] == None else 'Sim'}")
+                        print(f"Mesario: {'Sim' if res[5] == 1 else 'Não'}")
                         print("="*40 + "\n")
             
             # ---------------------------------------------------------
@@ -1092,6 +1088,7 @@ while opcao != 3:
                     print("\nExecutando a Zerézima...\n")
                     consultas.limpa_votos()
                     consultas.abrir_urna()
+                    consultas.confirmar_limpar()
                     util.registrar_log_abertura()
                     menu_votacao_iniciada()
                     print("----------------------------------\n")
@@ -1133,8 +1130,6 @@ while opcao != 3:
                             util.salvar_log("VOTACAO - Resultado - ERRO: Selecionado opção inválida do menu")
                             print("Opção inválida")
 
-
-                        
                 
                 # ---------------------------------------------------------
                 # AUDITORIA DA VOTACAO (RF002.02)
@@ -1204,6 +1199,7 @@ while opcao != 3:
     # SAIR DO SISTEMA
     # =================================================================
     elif opcao == 3:
+        print("\n" * 100)
         util.limpar_log()
         print("Saindo do programa\n")    
     # Opcao invalida no menu principal
