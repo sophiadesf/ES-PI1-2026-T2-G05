@@ -15,7 +15,7 @@
 
 Este projeto consiste em um Sistema de Eleições Eletrônicas completo, desenvolvido em Python com persistência de dados em MySQL. A aplicação foi projetada para simular com precisão e segurança o fluxo de um pleito eleitoral, desde a configuração inicial até a divulgação final dos resultados, garantindo a integridade e o sigilo de cada voto.
 
-O sistema conta com uma interface baseada em menus e submenus** intuitivos, guiados por um mapa de navegação fluído que direciona o usuário pelas etapas corretas da votação. Para garantir uma experiência de uso profissional e organizada, o programa utiliza um recurso de limpeza automática de tela, mantendo o terminal sempre limpo e facilitando a leitura das informações a cada transição de menu.
+O sistema conta com uma interface baseada em menus e submenus intuitivos, guiados por um mapa de navegação fluído que direciona o usuário pelas etapas corretas da votação. Para garantir uma experiência de uso profissional e organizada, o programa utiliza um recurso de limpeza automática de tela, mantendo o terminal sempre limpo e facilitando a leitura das informações a cada transição de menu.
 
 ------------------------------------------------------------------------------------------------------------------------------------------
 
