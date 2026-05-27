@@ -4,8 +4,11 @@
 # =============================================================================
 
 import consultas as consultas  # Modulo de conexao e queries do banco de dados
-import util as util       # Modulo de funcoes utilitarias (validacao, logs, etc.)
+import util as util           # Modulo de funcoes utilitarias (validacao, logs, etc.)
 import seguranca as seguranca # Modulo de criptografia conforme pedido no projeto
+import os                     # Limpa a tela do terminal
+
+os.system('cls' if os.name == 'nt' else 'clear')
 
 # =============================================================================
 # MENU PRINCIPAL
