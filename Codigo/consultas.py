@@ -15,10 +15,6 @@ conexao = mysql.connector.connect(
 
 cursor = conexao.cursor()
 
-def confirmar_limpar():
-    conexao.commit()
-    print("\n" * 100) 
-
 def inserir_candidatos(numero, nome, partido):
     """
     Insere um novo candidato no banco de dados conforme RF001.09.

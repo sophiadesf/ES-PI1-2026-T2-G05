@@ -2,7 +2,16 @@ from datetime import datetime
 # from cryptography.fernet import Fernet
 import random
 import string
+import os # Limpa a tela do terminal
 
+def limpar_tela():
+    if os.name == 'nt':
+        os.system('cls') # limpar tela do windows
+    else:
+        os.system('clear && printf "\e[3J"')
+        os.system('clear') # limpar tela do mac/linux
+
+ 
 def salvar_log(texto):
     """
     Salva log com timestamp no formato [YYYY-MM-DD HH:MM:SS] conforme RF002.02.01.02
