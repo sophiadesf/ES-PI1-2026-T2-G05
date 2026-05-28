@@ -30,3 +30,36 @@ def criptografar(texto):
         encriptado = np.dot(CHAVE_MESTRA, bloco) % 26
         resultado += "".join(chr(int(num) + ord('A')) for num in encriptado)
     return resultado
+
+# Descriptografia 
+def descriptografar(texto_criptografado):
+    """
+    Lógica inversa da Cifra de Hill
+    """
+    det = int(np.round(np.linalg.det(CHAVE_MESTRA))) % 26
+    
+    # Inverso multiplicativo do determinante módulo 26
+    det_inv = pow(det, -1, 26)
+    
+    # Matriz invertida (a,b,c,d = d,c,b,a)
+    adj = np.array([
+        [CHAVE_MESTRA[1, 1], -CHAVE_MESTRA[0, 1]],
+        [-CHAVE_MESTRA[1, 0], CHAVE_MESTRA[0, 0]]
+    ])
+    chave_inversa = (det_inv * adj) % 26
+    
+    # Converter as letras de volta para números base (0 a 25)
+    numeros = [ord(char) - ord('A') for char in texto_criptografado]
+    resultado = ""
+    
+    # Descriptografia em blocos de 2
+    for i in range(0, len(numeros), 2):
+        bloco = np.array(numeros[i:i+2])
+        
+        # Multiplica o bloco pela matriz inversa e aplica o módulo
+        descriptografado = np.dot(chave_inversa, bloco) % 26
+        
+        # Junta os números recuperados (convertendo os inteiros de volta para string)
+        resultado += "".join(str(int(num)) for num in descriptografado)
+        
+    return resultado
