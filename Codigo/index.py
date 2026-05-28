@@ -371,6 +371,7 @@ def validacao_integridade():
 opcao = 0 
 while opcao != 3: 
     print("\n" * 100)
+    print("LAD.Py - Sistema de votação digital")
     print("----------------------------------")
     print("1 - Gerenciamento")
     print("2 - Votacao")

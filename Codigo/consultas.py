@@ -1,4 +1,3 @@
-print(1)
 import mysql.connector
 from datetime import datetime
 import util as util
@@ -7,17 +6,15 @@ import seguranca as seguranca
 Módulo de conexão e consultas com banco de dados MySQL
 Responsável por todas as operações CRUD e autenticação
 """
-print(2)
 conexao = mysql.connector.connect(
-    host = "127.0.0.1",
+    host = "localhost",
     user = "root",
     password = "puc1234",
     database = "sistema_eleicao"
 )
-print(3)
 
 cursor = conexao.cursor()
-print(4)
+
 def confirmar_limpar():
     conexao.commit()
     print("\n" * 100) 
@@ -441,7 +438,6 @@ def urna_aberta():
     """
     cursor.execute("SELECT aberta FROM urna WHERE id = 1")
     resultado = cursor.fetchone()
-    print("DEBUG:", resultado)
 
     if resultado is None:
         return False
