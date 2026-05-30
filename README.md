@@ -47,4 +47,3 @@ Por fim, o sistema entrega uma visão analítica detalhada sobre o encerramento 
 
 * Linguagem: Python
 * Banco de Dados: MySQL
-* Segurança: Criptografia de dados (Cifra Hills).
