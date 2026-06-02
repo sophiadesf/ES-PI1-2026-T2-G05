@@ -46,7 +46,7 @@ def criptografar_chave_acesso(chave):
     
     # Validação simples do formato exigido
     if len(letras) != 3 or len(numeros) != 4:
-        raise ValueError("A chave de acesso deve conter exatamente 3 letras e 4 números.")
+        raise ValueError("A chave de acesso deve conter exatamente 3 letras e 4 números (Ex: ABC1234).")
     
     # --- Parte 1: Letras (Z26) ---
     # Adiciona preenchimento (padding) se o bloco não for par (3 letras -> precisa de 4)
@@ -71,6 +71,9 @@ def criptografar_chave_acesso(chave):
     return letras_cripto + numeros_cripto
 
 def descriptografar_chave_acesso(chave_cripto):
+    if len(chave_cripto) != 8:
+         raise ValueError("A chave criptografada deve ter exatamente 8 caracteres.")
+         
     # Separar os blocos resultantes (4 letras e 4 números)
     letras = chave_cripto[:4]
     numeros = chave_cripto[4:]
@@ -140,23 +143,55 @@ def descriptografar_cpf(cpf_cripto):
 
 
 # ----------------------------------------------------------------------------------------------
-# TESTES DE VALIDAÇÃO
+# INTERFACE COM O USUÁRIO (MENU INTERATIVO)
 # ----------------------------------------------------------------------------------------------
 if __name__ == "__main__":
-    print("--- TESTE 1: CHAVE DE ACESSO ---")
-    chave_original = "ABC1234"
-    chave_enc = criptografar_chave_acesso(chave_original)
-    chave_dec = descriptografar_chave_acesso(chave_enc)
-    
-    print(f"Original:      {chave_original}")
-    print(f"Criptografado: {chave_enc} (Note que o bloco de letras virou 4 letras devido ao preenchimento)")
-    print(f"Decifrado:     {chave_dec}")
-    
-    print("\n--- TESTE 2: CPF ---")
-    cpf_original = "12345678901"
-    cpf_enc = criptografar_cpf(cpf_original)
-    cpf_dec = descriptografar_cpf(cpf_enc)
-    
-    print(f"Original:      {cpf_original}")
-    print(f"Criptografado: {cpf_enc}")
-    print(f"Decifrado:     {cpf_dec}")
+    while True:
+        print("\n==========================================")
+        print("          SISTEMA DE CRIPTOGRAFIA         ")
+        print("==========================================")
+        print("1 - Criptografar Chave de Acesso")
+        print("2 - Descriptografar Chave de Acesso")
+        print("3 - Criptografar CPF")
+        print("4 - Descriptografar CPF")
+        print("0 - Sair")
+        print("==========================================")
+        
+        opcao = input("Escolha uma opção: ").strip()
+        
+        if opcao == "0":
+            print("Encerrando o programa. Até logo!")
+            break
+            
+        try:
+            if opcao == "1":
+                print("\n--- CRIPTOGRAFAR CHAVE DE ACESSO ---")
+                entrada = input("Digite a chave (Ex: ABC1234): ")
+                resultado = criptografar_chave_acesso(entrada)
+                print(f"Resultado Criptografado: {resultado}")
+                
+            elif opcao == "2":
+                print("\n--- DESCRIPTOGRAFAR CHAVE DE ACESSO ---")
+                entrada = input("Digite a chave criptografada (Ex: DFGE9216): ")
+                resultado = descriptografar_chave_acesso(entrada)
+                print(f"Resultado Decifrado: {resultado}")
+                
+            elif opcao == "3":
+                print("\n--- CRIPTOGRAFAR CPF ---")
+                entrada = input("Digite o CPF (apenas números, Ex: 12345678901): ")
+                resultado = criptografar_cpf(entrada)
+                print(f"Resultado Criptografado: {resultado}")
+                
+            elif opcao == "4":
+                print("\n--- DESCRIPTOGRAFAR CPF ---")
+                entrada = input("Digite o texto criptografado do CPF: ")
+                resultado = descriptografar_cpf(entrada)
+                print(f"Resultado Decifrado: {resultado}")
+                
+            else:
+                print("Opção inválida! Tente novamente.")
+                
+        except Exception as e:
+            print(f"Erro: {e}")
+            
+        input("\nPressione Enter para continuar...")
