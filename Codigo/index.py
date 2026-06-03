@@ -586,7 +586,7 @@ while opcao != 3:
                         mesario = 1 if is_mesario else 0
 
                         # Cadastra na tabela de eleitores
-                        consultas.inserir_eleitores(titulo, seguranca.criptografar(cpf), nome, seguranca.criptografar(chave_acesso), None, mesario)
+                        consultas.inserir_eleitores(titulo, seguranca.criptografar_cpf(cpf), nome, seguranca.criptografar_chave_acesso(chave_acesso), None, mesario)
                     
                         util.salvar_log("SUCESSO - Eleitor cadastrado: " + nome)
                         util.limpar_tela()
@@ -645,7 +645,7 @@ while opcao != 3:
                         else:
                             break
 
-                    cpf_criptografado = seguranca.criptografar(cpf_busca)
+                    cpf_criptografado = seguranca.criptografar_cpf(cpf_busca)
 
                     eleitor_encontrado = None
                     eleitor_mesario = "Não"
@@ -789,7 +789,7 @@ while opcao != 3:
                         print("\nErro: CPF deve ter 11 digitos!\n")
                         input("Pressione Enter para continuar")
                         continue
-                    cpf_busca = seguranca.criptografar(cpf_busca)
+                    cpf_busca = seguranca.criptografar_cpf(cpf_busca)
                     # Variaveis para armazenar resultado da busca
                     eleitor_encontrado = None   
                     try:

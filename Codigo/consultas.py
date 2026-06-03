@@ -212,7 +212,7 @@ def filtra_eleitores(pesquisa):
     sql = "SELECT E.id_eleitor, E.titulo_eleitor, E.cpf, E.nome_completo, E.ja_votou, E.mesario FROM ELEITORES E WHERE E.titulo_eleitor LIKE %s OR E.nome_completo LIKE %s OR E.cpf LIKE %s ORDER BY E.id_eleitor"
     
     valor = f"%{pesquisa}%"
-    valores = (seguranca.criptografar(valor), valor, seguranca.criptografar(valor))
+    valores = (valor, valor, seguranca.criptografar_cpf(valor))
 
     cursor.execute(sql, valores)
     resultado = cursor.fetchall()
@@ -243,7 +243,7 @@ def verificar_cpf_existe(cpf):
         bool: True se CPF já existe, False caso contrário
     """
     try:
-        cursor.execute("SELECT 1 FROM eleitores WHERE cpf = %s LIMIT 1", (seguranca.criptografar(cpf),))
+        cursor.execute("SELECT 1 FROM eleitores WHERE cpf = %s LIMIT 1", (seguranca.criptografar_cpf(cpf),))
         return cursor.fetchone() is not None
 
     except Exception as e:
@@ -285,7 +285,7 @@ def verifica_eleitor(titulo, cpf_4, chave, tipo):
         sql = "SELECT nome_completo, mesario FROM eleitores WHERE titulo_eleitor=%s AND LEFT(cpf,4)=%s AND senha=%s "
         if tipo == 1:
             sql += " AND COALESCE(mesario,0) = 1"
-        cursor.execute(sql, (titulo, seguranca.criptografar(cpf_4), seguranca.criptografar(chave)))
+        cursor.execute(sql, (titulo, seguranca.criptografar_cpf(cpf_4), seguranca.criptografar_chave_acesso(chave)))
         return cursor.fetchone() is not None
     except Exception as e:
         print("Erro ao verificar se o mesario existe no banco:", e)
@@ -305,7 +305,7 @@ def verifica_javotou(titulo, cpf_4, chave):
     """
     try:
         sql = "SELECT ja_votou FROM eleitores WHERE titulo_eleitor=%s AND LEFT(cpf,4)=%s AND senha=%s"
-        cursor.execute(sql, (titulo, seguranca.criptografar(cpf_4), seguranca.criptografar(chave)))
+        cursor.execute(sql, (titulo, seguranca.criptografar_cpf(cpf_4), seguranca.criptografar_chave_acesso(chave)))
         resultado = cursor.fetchone()
 
         if resultado is None:
@@ -396,7 +396,7 @@ def atualiza_eleitor(titulo, cpf_4, chave):
     """
     try:
         sql = "UPDATE eleitores SET ja_votou = 1 WHERE titulo_eleitor=%s AND left(cpf,4)=%s AND senha=%s"
-        cursor.execute(sql, (titulo, seguranca.criptografar(cpf_4), seguranca.criptografar(chave)))
+        cursor.execute(sql, (titulo, seguranca.criptografar_cpf(cpf_4), seguranca.criptografar_chave_acesso(chave)))
         conexao.commit()
         return cursor.rowcount > 0
     except Exception as e:
