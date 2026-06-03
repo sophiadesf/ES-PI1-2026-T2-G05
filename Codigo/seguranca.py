@@ -1,76 +1,197 @@
-import numpy as np
-import re
-#expressões regulares em inglês 
-#----------------------------------------------------------------------------------------------
-#                                     (RNF 005) 
-#----------------------------------------------------------------------------------------------
-# Matriz 2x2 fixa para garantir que o sistema sempre gere a MESMA chave para o MESMO título
-CHAVE_MESTRA = np.array([[3, 3], [2, 5]])
+# ----------------------------------------------------------------------------------------------
+# MATRIZ CHAVE FIXA 2x2
+# CHAVE_MESTRA = [[3, 3], 
+#                 [2, 5]]
+# ----------------------------------------------------------------------------------------------
+CHAVE_MESTRA = [[3, 3], [2, 5]]
 
-def criptografar(texto):
-    """Lógica da Cifra de Hill: Título -> Letras Criptografadas
-        Args:
-        texto (str): texto a ser encriptografado
+# Determinante da matriz: (3*5) - (3*2) = 15 - 6 = 9
+DET = 9 
+
+# Inverso multiplicativo de 9 em Z26 é 3 (pois 9 * 3 = 27, e 27 % 26 = 1)
+DET_INV_26 = 3
+
+# Inverso multiplicativo de 9 em Z10 é 9 (pois 9 * 9 = 81, e 81 % 10 = 1)
+DET_INV_10 = 9
+
+# Matriz Adjunta para a inversão: [[d, -b], [-c, a]] -> [[5, -3], [-2, 3]]
+MATRIZ_ADJ = [[5, -3], [-2, 3]]
+
+
+# ----------------------------------------------------------------------------------------------
+# FUNÇÕES AUXILIARES DE MATRIZ (SEM NUMPY)
+# ----------------------------------------------------------------------------------------------
+def multiplicar_matriz_bloco(matriz, bloco, mod):
+    """Multiplica uma matriz 2x2 por um vetor 2x1 sob um módulo."""
+    x = (matriz[0][0] * bloco[0] + matriz[0][1] * bloco[1]) % mod
+    y = (matriz[1][0] * bloco[0] + matriz[1][1] * bloco[1]) % mod
+    return [x, y]
+
+def obter_matriz_inversa(mod, det_inv):
+    """Calcula a matriz inversa estritamente sob o módulo fornecido."""
+    inversa = [
+        [(MATRIZ_ADJ[0][0] * det_inv) % mod, (MATRIZ_ADJ[0][1] * det_inv) % mod],
+        [(MATRIZ_ADJ[1][0] * det_inv) % mod, (MATRIZ_ADJ[1][1] * det_inv) % mod]
+    ]
+    return inversa
+
+
+# ----------------------------------------------------------------------------------------------
+# CRIPTOGRAFIA DA CHAVE DE ACESSO (3 Letras em Z26 + 4 Números em Z10)
+# ----------------------------------------------------------------------------------------------
+def criptografar_chave_acesso(chave):
+    # Separar letras e números sem 're'
+    letras = "".join([c for c in chave if c.isalpha()]).upper()
+    numeros = "".join([c for c in chave if c.isdigit()])
     
-        Returns:
-            texto já criptografado
-    """
-    texto_limpo = re.sub(r'\D', '', str(texto))
+    # Validação simples do formato exigido
+    if len(letras) != 3 or len(numeros) != 4:
+        raise ValueError("A chave de acesso deve conter exatamente 3 letras e 4 números (Ex: ABC1234).")
     
-    if len(texto_limpo) % 2 != 0:
-        texto_limpo += "0"
+    # --- Parte 1: Letras (Z26) ---
+    # Adiciona preenchimento (padding) se o bloco não for par (3 letras -> precisa de 4)
+    letras_pad = letras + "A" 
+    num_letras = [ord(c) - ord('A') for c in letras_pad]
     
-    # Converte os números para as letras
-    texto_limpo = "".join([chr(int(n) + ord('A')) for n in texto_limpo])
+    letras_cripto = ""
+    for i in range(0, len(num_letras), 2):
+        bloco = num_letras[i:i+2]
+        res = multiplicar_matriz_bloco(CHAVE_MESTRA, bloco, 26)
+        letras_cripto += "".join(chr(n + ord('A')) for n in res)
+        
+    # --- Parte 2: Números (Z10) ---
+    num_digitos = [int(n) for n in numeros]
     
-    # encriptação 
-    numeros = [ord(char) - ord('A') for char in texto_limpo]
+    numeros_cripto = ""
+    for i in range(0, len(num_digitos), 2):
+        bloco = num_digitos[i:i+2]
+        res = multiplicar_matriz_bloco(CHAVE_MESTRA, bloco, 10)
+        numeros_cripto += "".join(str(n) for n in res)
+        
+    return letras_cripto + numeros_cripto
+
+def descriptografar_chave_acesso(chave_cripto):
+    if len(chave_cripto) != 8:
+         raise ValueError("A chave criptografada deve ter exatamente 8 caracteres.")
+         
+    # Separar os blocos resultantes (4 letras e 4 números)
+    letras = chave_cripto[:4]
+    numeros = chave_cripto[4:]
+    
+    # --- Parte 1: Decifrar Letras (Z26) ---
+    matriz_inv_26 = obter_matriz_inversa(26, DET_INV_26)
+    num_letras = [ord(c) - ord('A') for c in letras]
+    
+    letras_decifradas = ""
+    for i in range(0, len(num_letras), 2):
+        bloco = num_letras[i:i+2]
+        res = multiplicar_matriz_bloco(matriz_inv_26, bloco, 26)
+        letras_decifradas += "".join(chr(n + ord('A')) for n in res)
+    
+    # Remove a letra de preenchimento 'A' colocada no final
+    letras_originais = letras_decifradas[:-1]
+    
+    # --- Parte 2: Decifrar Números (Z10) ---
+    matriz_inv_10 = obter_matriz_inversa(10, DET_INV_10)
+    num_digitos = [int(n) for n in numeros]
+    
+    numeros_originais = ""
+    for i in range(0, len(num_digitos), 2):
+        bloco = num_digitos[i:i+2]
+        res = multiplicar_matriz_bloco(matriz_inv_10, bloco, 10)
+        numeros_originais += "".join(str(n) for n in res)
+        
+    return letras_originais + numeros_originais
+
+
+# ----------------------------------------------------------------------------------------------
+# CRIPTOGRAFIA DO CPF (Z26 - Converte Números para Letras)
+# ----------------------------------------------------------------------------------------------
+def criptografar_cpf(cpf):
+    # Limpa deixando apenas números
+    cpf_limpo = "".join([c for c in str(cpf) if c.isdigit()])
+    
+    # CPF tem 11 dígitos, adicionamos "0" para virar par (12)
+    if len(cpf_limpo) % 2 != 0:
+        cpf_limpo += "0"
+        
+    # Transforma números em letras de A-J para rodar na Cifra de Hill Z26 original
+    letras_convertidas = "".join([chr(int(n) + ord('A')) for n in cpf_limpo])
+    
+    valores_numericos = [ord(char) - ord('A') for char in letras_convertidas]
     resultado = ""
-    for i in range(0, len(numeros), 2):
-        bloco = np.array(numeros[i:i+2])
-        encriptado = np.dot(CHAVE_MESTRA, bloco) % 26
-        resultado += "".join(chr(int(num) + ord('A')) for num in encriptado)
+    for i in range(0, len(valores_numericos), 2):
+        bloco = valores_numericos[i:i+2]
+        res = multiplicar_matriz_bloco(CHAVE_MESTRA, bloco, 26)
+        resultado += "".join(chr(n + ord('A')) for n in res)
     return resultado
 
-# Descriptografia 
-def descriptografar(texto_criptografado):
-    """
-    Lógica inversa da Cifra de Hill
-    Args:
-        texto (str): Texto já criptografado
+def descriptografar_cpf(cpf_cripto):
+    matriz_inv_26 = obter_matriz_inversa(26, DET_INV_26)
+    valores_numericos = [ord(char) - ord('A') for char in cpf_cripto]
     
-    Returns:
-        Texto descriptografado
-    """
-  
-    det = int(np.round(np.linalg.det(CHAVE_MESTRA))) % 26
-    if len(texto_criptografado) % 2 != 0:
-        texto_criptografado += "A"
-    # Inverso multiplicativo do determinante módulo 26
-    det_inv = pow(det, -1, 26)
-    
-    # Matriz invertida (a,b,c,d = d,c,b,a)
-    adj = np.array([
-        [CHAVE_MESTRA[1, 1], -CHAVE_MESTRA[0, 1]],
-        [-CHAVE_MESTRA[1, 0], CHAVE_MESTRA[0, 0]]
-    ])
-    chave_inversa = (det_inv * adj) % 26
-    
-    # Converter as letras de volta para números base (0 a 25)
-    numeros = [ord(char) - ord('A') for char in texto_criptografado]
-    resultado = ""
-    
-    # Descriptografia em blocos de 2
-    for i in range(0, len(numeros), 2):
-        bloco = np.array(numeros[i:i+2])
+    resultado_numeros = ""
+    for i in range(0, valores_numericos.__len__(), 2):
+        bloco = valores_numericos[i:i+2]
+        res = multiplicar_matriz_bloco(matriz_inv_26, bloco, 26)
+        resultado_numeros += "".join(str(n) for n in res)
         
-        # Multiplica o bloco pela matriz inversa e aplica o módulo
-        descriptografado = np.dot(chave_inversa, bloco) % 26
+    # Remove o "0" de padding adicionado no final
+    if resultado_numeros.endswith("0"):
+        resultado_numeros = resultado_numeros[:-1]
+    return resultado_numeros
+
+
+# ----------------------------------------------------------------------------------------------
+# INTERFACE COM O USUÁRIO (MENU INTERATIVO)
+# ----------------------------------------------------------------------------------------------
+if __name__ == "__main__":
+    while True:
+        print("\n==========================================")
+        print("          SISTEMA DE CRIPTOGRAFIA         ")
+        print("==========================================")
+        print("1 - Criptografar Chave de Acesso")
+        print("2 - Descriptografar Chave de Acesso")
+        print("3 - Criptografar CPF")
+        print("4 - Descriptografar CPF")
+        print("0 - Sair")
+        print("==========================================")
         
-        # Junta os números recuperados (convertendo os inteiros de volta para string)
-        resultado += "".join(str(int(num)) for num in descriptografado)
+        opcao = input("Escolha uma opção: ").strip()
         
-    # remove o 0 que adiciona no final da descriptografia
-    if resultado.endswith("0"):
-        resultado = resultado[:-1]
-    return resultado
+        if opcao == "0":
+            print("Encerrando o programa. Até logo!")
+            break
+            
+        try:
+            if opcao == "1":
+                print("\n--- CRIPTOGRAFAR CHAVE DE ACESSO ---")
+                entrada = input("Digite a chave (Ex: ABC1234): ")
+                resultado = criptografar_chave_acesso(entrada)
+                print(f"Resultado Criptografado: {resultado}")
+                
+            elif opcao == "2":
+                print("\n--- DESCRIPTOGRAFAR CHAVE DE ACESSO ---")
+                entrada = input("Digite a chave criptografada (Ex: DFGE9216): ")
+                resultado = descriptografar_chave_acesso(entrada)
+                print(f"Resultado Decifrado: {resultado}")
+                
+            elif opcao == "3":
+                print("\n--- CRIPTOGRAFAR CPF ---")
+                entrada = input("Digite o CPF (apenas números, Ex: 12345678901): ")
+                resultado = criptografar_cpf(entrada)
+                print(f"Resultado Criptografado: {resultado}")
+                
+            elif opcao == "4":
+                print("\n--- DESCRIPTOGRAFAR CPF ---")
+                entrada = input("Digite o texto criptografado do CPF: ")
+                resultado = descriptografar_cpf(entrada)
+                print(f"Resultado Decifrado: {resultado}")
+                
+            else:
+                print("Opção inválida! Tente novamente.")
+                
+        except Exception as e:
+            print(f"Erro: {e}")
+            
+        input("\nPressione Enter para continuar...")
