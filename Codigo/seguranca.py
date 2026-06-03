@@ -7,11 +7,6 @@ import re
 # Matriz 2x2 fixa para garantir que o sistema sempre gere a MESMA chave para o MESMO título
 CHAVE_MESTRA = np.array([[3, 3], [2, 5]])
 
-# def validar_cpf(cpf):
-#     cpf = re.sub(r'\D', '', str(cpf))
-#     return len(cpf) == 11
-#     # Valida e ve se o cpf existe e tem o num certo (ex: se tiver 9, vai dar erro)
-
 def criptografar(texto):
     """Lógica da Cifra de Hill: Título -> Letras Criptografadas
         Args:
