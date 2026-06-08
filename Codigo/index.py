@@ -357,7 +357,7 @@ def votos_por_partido():
     partidos = consultas.obter_votos_por_partido()
     
     # Verifica se há dados de partidos; se não há votos, exibe mensagem e sai da função 
-    if len(partidos) == 0: 
+    if len(partidos) == 0: #len:retorna a quantidade de elementos que existem
         print("Nenhum voto foi registrado ainda.")
         return 
     
@@ -365,7 +365,7 @@ def votos_por_partido():
     # Calcula o total de votos somando a lista de partidos
     total_votos = 0 
     for p in partidos: 
-        total_votos = total_votos + p[1]
+        total_votos = total_votos + p[1] #está somando votos ao total acumulado.
     
 
     # Exibe o total de votos registrados
@@ -373,7 +373,7 @@ def votos_por_partido():
     print("\n-------------------------------------------------")
     # Imprime sobre cada partido para exibir sua quantidade de votos; p[0]= nome do partido , p[1]= quantidade de votos
     for p in partidos: 
-        print(f"Partido: {p[0]:<15}  Votos: {p[1]:<10}" )
+        print(f"Partido: {p[0]:<15}  Votos: {p[1]:<10}" ) #formatar a saída de forma organizada em colunas.
         print("-------------------------------------------------")
    
     # Registra esta operação nos logs do sistema para auditoria
