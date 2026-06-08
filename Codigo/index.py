@@ -1471,7 +1471,7 @@ while opcao != 3:
                             if not protocolos:
                                 print("Nenhum protocolo registrado ainda.\n")
                             else:
-                                print("="*60)
+                                print("="*60)#ficar bonito visualmente
                                 print("PROTOCOLOS DE VOTAÇÃO GERADOS")
                                 print("="*60)
                                 print(f"Total de protocolos: {len(protocolos)}\n")
