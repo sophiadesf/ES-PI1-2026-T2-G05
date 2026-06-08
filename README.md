@@ -27,7 +27,7 @@ A segurança é o principal da aplicação. O fluxo é protegido por uma chave d
 
 # 👥 Gestão de Usuários e Candidatos
 
-O gerenciamento do ecossistema eleitoral é feito de ponta a ponta. O sistema oferece um CRUD completo para a administração de votantes, permitindo cadastrar, editar, listar e deletar eleitores. Paralelamente, a gestão e cadastro de candidatos são estruturados para vincular corretamente os concorrentes aos seus respectivos cargos e legendas.
+O gerenciamento do cenário eleitoral é feito de ponta a ponta. O sistema oferece um CRUD completo para a administração de votantes, permitindo cadastrar, editar, listar e deletar eleitores. Paralelamente, a gestão e cadastro de candidatos são estruturados para vincular corretamente os concorrentes aos seus respectivos cargos e legendas.
 
 ------------------------------------------------------------------------------------------------------------------------------------------
 
