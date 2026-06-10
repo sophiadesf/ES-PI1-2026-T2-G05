@@ -1,22 +1,18 @@
-[2026-05-28 19:50:12] Gerenciamento -> ERRO: Opcao invalida do menu
-[2026-05-28 19:50:25] GERENCIAMENTO CANDIDATOS - ERRO: Opção inválida
-[2026-05-29 08:15:44] Gerenciamento -> ERRO: Opcao invalida do menu
-[2026-05-29 08:18:31] Gerenciamento -> ERRO: Opcao invalida do menu
-[2026-05-29 08:18:39] Votacao -> Opcao invalida
-[2026-05-29 08:19:05] Votacao -> Opcao invalida
-[2026-05-29 08:19:13] Gerenciamento -> ERRO: Opcao invalida do menu
-[2026-05-29 08:19:18] GERENCIAMENTO CANDIDATOS - ERRO: Opção inválida
-[2026-05-29 08:21:22] GERENCIAMENTO CANDIDATOS - ERRO: Opção inválida
-[2026-05-29 08:21:22] GERENCIAMENTO CANDIDATOS - ERRO: Opção inválida
-[2026-05-29 08:21:29] GERENCIAMENTO CANDIDATOS - ERRO: Opção inválida
-[2026-05-29 08:21:35] Gerenciamento -> ERRO: Opcao invalida do menu
-[2026-05-29 08:21:49] VOTACAO - Resultado - ERRO: Selecionado opção inválida do menu
-[2026-05-29 08:22:27] VOTACAO - Resultado - ERRO: Selecionado opção inválida do menu
-[2026-05-29 08:22:55] Votacao -> Opcao invalida
-[2026-05-29 08:27:52] Votacao -> Opcao invalida
-[2026-06-02 14:10:38] ERRO - Tentativa de cadastro sem nome e sobrenome
-[2026-06-02 14:10:51] ERRO - Titulo de eleitor invalido informado
-[2026-06-02 14:10:58] ERRO - Titulo de eleitor invalido informado
-[2026-06-02 14:11:11] ERRO - Titulo de eleitor invalido informado
-[2026-06-02 14:11:19] SUCESSO - Eleitor cadastrado: Sophia lope
-[2026-06-03 09:12:05] ALERTA: Tentativa de acesso negado - Validação de mesário falhou
+[2026-06-09 11:18:04] ERRO - CPF invalido informado
+[2026-06-09 11:18:27] ERRO - Titulo de eleitor invalido informado
+[2026-06-09 11:18:39] SUCESSO - Eleitor cadastrado: Juliana Silva
+[2026-06-09 11:19:22] ALERTA: Tentativa de acesso negado - Validação de mesário falhou
+[2026-06-09 11:19:42] ABERTURA: Votação iniciada com sucesso. Total de votos zerado.
+[2026-06-09 11:20:50] ALERTA: Tentativa de acesso negado - Validação de eleitor falhou
+[2026-06-09 11:21:29] SUCESSO: Voto realizado com sucesso
+[2026-06-09 11:21:46] ALERTA: Tentativa de voto duplo
+[2026-06-09 11:22:27] ALERTA: Tentativa de acesso negado - Validação de eleitor falhou
+[2026-06-09 11:23:16] SUCESSO: Voto realizado com sucesso
+[2026-06-09 11:23:43] ENCERRAMENTO: Votação finalizada com sucesso.
+[2026-06-09 11:23:52] AUDITORIA - Exibição de Logs de Ocorrências
+[2026-06-09 11:24:25] AUDITORIA - Exibição dos Protocolos de Votação
+[2026-06-09 11:24:42] RESULTADO - Boletim de Urna consultado
+[2026-06-09 11:25:00] RESULTADO!! - Estatística de Comparecimento consultada
+[2026-06-09 11:25:09] RESULTADO!! - Votos por Partido consultados
+[2026-06-09 11:25:13] RESULTADO!! - Validação de Integridade consultada
+[2026-06-09 11:25:27] VOTACAO - Sair

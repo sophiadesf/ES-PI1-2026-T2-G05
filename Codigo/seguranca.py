@@ -19,7 +19,7 @@ MATRIZ_ADJ = [[5, -3], [-2, 3]]
 
 
 # ----------------------------------------------------------------------------------------------
-# FUNÇÕES AUXILIARES DE MATRIZ (SEM NUMPY)
+# FUNÇÕES AUXILIARES DE MATRIZ
 # ----------------------------------------------------------------------------------------------
 def multiplicar_matriz_bloco(matriz, bloco, mod):
     """Multiplica uma matriz 2x2 por um vetor 2x1 sob um módulo."""
@@ -140,56 +140,3 @@ def descriptografar_cpf(cpf_cripto):
     if resultado_numeros.endswith("0"):
         resultado_numeros = resultado_numeros[:-1]
     return resultado_numeros
-
-
-# ----------------------------------------------------------------------------------------------
-# INTERFACE COM O USUÁRIO (MENU INTERATIVO)
-# ----------------------------------------------------------------------------------------------
-""" if __name__ == "__main__":
-   print("\n==========================================")
-    print("          SISTEMA DE CRIPTOGRAFIA         ")
-    print("==========================================")
-    print("1 - Criptografar Chave de Acesso")
-    print("2 - Descriptografar Chave de Acesso")
-    print("3 - Criptografar CPF")
-    print("4 - Descriptografar CPF")
-    print("0 - Sair")
-    print("==========================================")
-    
-    opcao = input("Escolha uma opção: ").strip()
-    
-    if opcao == "0":
-        print("Encerrando o programa. Até logo!")
-
-    try:
-        if opcao == "1":
-            print("\n--- CRIPTOGRAFAR CHAVE DE ACESSO ---")
-            entrada = input("Digite a chave (Ex: ABC1234): ")
-            resultado = criptografar_chave_acesso(entrada)
-            print(f"Resultado Criptografado: {resultado}")
-            
-        elif opcao == "2":
-            print("\n--- DESCRIPTOGRAFAR CHAVE DE ACESSO ---")
-            entrada = input("Digite a chave criptografada (Ex: DFGE9216): ")
-            resultado = descriptografar_chave_acesso(entrada)
-            print(f"Resultado Decifrado: {resultado}")
-            
-        elif opcao == "3":
-            print("\n--- CRIPTOGRAFAR CPF ---")
-            entrada = input("Digite o CPF (apenas números, Ex: 12345678901): ")
-            resultado = criptografar_cpf(entrada)
-            print(f"Resultado Criptografado: {resultado}")
-            
-        elif opcao == "4":
-            print("\n--- DESCRIPTOGRAFAR CPF ---")
-            entrada = input("Digite o texto criptografado do CPF: ")
-            resultado = descriptografar_cpf(entrada)
-            print(f"Resultado Decifrado: {resultado}")
-            
-        else:
-            print("Opção inválida! Tente novamente.")
-            
-    except Exception as e:
-        print(f"Erro: {e}")
-        
-    input("\nPressione Enter para continuar...") """
